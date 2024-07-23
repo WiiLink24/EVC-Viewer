@@ -1,0 +1,19 @@
+{
+  "name": "evc-viewer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "install:frontend": "cd frontend && npm i",
+    "install:backend": "cd backend && npm i",
+    "install": "concurrently \"npm run install:frontend\" \"npm run install:backend\"",
+    "start:frontend": "cd frontend && npm run dev",
+    "start:backend": "cd backend && node app.js",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
