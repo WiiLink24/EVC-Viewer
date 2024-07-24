@@ -39,7 +39,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.get("*", (req, res) => {
+app.get("*", (req:any, res:any) => {
   res.sendFile(path.join(__dirname, "public/dist/index.html"));
 });
 
