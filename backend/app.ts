@@ -12,17 +12,14 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
-var corsOptions = {
-  origin: false,
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
+
 
 var accessLogStream = fs.createWriteStream(path.join(__dirname, "access.log"), {
   flags: "a",
 });
 
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(express.static(path.join(__dirname, "public/dist")));
