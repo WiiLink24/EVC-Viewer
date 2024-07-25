@@ -7,7 +7,7 @@
     "install:backend": "cd backend && npm i",
     "install": "concurrently \"npm run install:frontend\" \"npm run install:backend\"",
     "start:frontend": "cd frontend && npm run dev",
-    "start:backend": "cd backend && node app.js",
+    "start:backend": "cd backend && npm run dev",
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
   },
   "author": "",

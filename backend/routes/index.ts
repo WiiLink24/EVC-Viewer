@@ -57,7 +57,7 @@ router.get('/api/polls', async (req:any, res:any) => {
   }
 })
 
-router.get('/api/polls/:id', async (req:any, res:any) => {
+router.get('/api/polls/poll/:id', async (req:any, res:any) => {
   try {
     const id = req.params.id;
     const language = req.query.language || 'english';
@@ -148,23 +148,77 @@ router.get('/api/polls/:id', async (req:any, res:any) => {
       
       results_data.total_votes_percentage = {
         choice1: {
-          male: ((total_votes_raw[0] / results_data.total_votes) * 100),
-          female: ((total_votes_raw[1] / results_data.total_votes) * 100),
-          total:((total_votes_raw[0] + total_votes_raw[1]) / results_data.total_votes) * 100,
+          male: ((total_votes_raw[0] / results_data.total_votes.choice1.total) * 100),
+          female: ((total_votes_raw[1] / results_data.total_votes.choice1.total) * 100),
+          total:((total_votes_raw[0] + total_votes_raw[1]) / results_data.total_votes.total) * 100,
+        },
         choice2: {
-          male: ((total_votes_raw[2] / results_data.total_votes) * 100),
-          female: ((total_votes_raw[3] / results_data.total_votes) * 100),
-          total: ((total_votes_raw[2] + total_votes_raw[3]) / results_data.total_votes) * 100,
+          male: ((total_votes_raw[2] / results_data.total_votes.choice2.total) * 100),
+          female: ((total_votes_raw[3] / results_data.total_votes.choice2.total) * 100),
+          total: ((total_votes_raw[2] + total_votes_raw[3]) / results_data.total_votes.total) * 100,
       }
-    }}
+    }
 
       results_data.total_predictions_percentage = {
-        choice1: ((total_predictions_raw[0] + total_predictions_raw[1]) / results_data.total_predictions) * 100,
-        choice2: ((total_predictions_raw[2] + total_predictions_raw[3]) / results_data.total_predictions) * 100,
+        choice1: {
+          male: ((total_predictions_raw[0] / results_data.total_predictions.choice1.total) * 100),
+          female: ((total_predictions_raw[1] / results_data.total_predictions.choice1.total) * 100),
+          total:((total_predictions_raw[0] + total_predictions_raw[1]) / results_data.total_predictions.total) * 100,
+        },
+        choice2: {
+          male: ((total_predictions_raw[2] / results_data.total_predictions.choice2.total) * 100),
+          female: ((total_predictions_raw[3] / results_data.total_predictions.choice2.total) * 100),
+          total: ((total_predictions_raw[2] + total_predictions_raw[3]) / results_data.total_predictions.total) * 100,
       }
+    }
 
 
     res.json({poll_data, results_data});
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: (error as any).message });
+  }
+})
+
+router.get('/api/polls/current', async (req:any, res:any) => {
+  try {
+    const language = req.query.language || 'english';
+    const type = req.query.type || 'all';
+
+    const date = new Date().toISOString().split('T')[0];
+    let date_delayed
+    let date_delayed_w = new Date(new Date().setDate(new Date().getDate() - 13)).toISOString().split('T')[0];
+
+    let contentColumn, choice1Column, choice2Column;
+
+    if (languageColumns[language]) {
+      [contentColumn, choice1Column, choice2Column] = languageColumns[language];
+    } else {
+      [contentColumn, choice1Column, choice2Column] = languageColumns.english;
+    }
+
+    let query;
+    //query the polls that are at least 6 days old
+    if (type === 'all') {
+      query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 AND date >= $2 AND type = 'n' OR date <= $3 AND date >= $4 AND type = 'w'`;
+      date_delayed = new Date(new Date().setDate(new Date().getDate() - 6)).toISOString().split('T')[0];
+    } else if (type === 'national') {
+      query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 AND date >= $2 AND type = 'n'`;
+      date_delayed = new Date(new Date().setDate(new Date().getDate() - 6)).toISOString().split('T')[0];
+    } else if (type === 'worldwide') {
+      query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 AND date >= $2 AND type = 'w'`;
+      date_delayed = new Date(new Date().setDate(new Date().getDate() - 13)).toISOString().split('T')[0];
+    }
+
+    let data
+    if (type === 'all') {
+      data = await db.many(query, [date, date_delayed, date, date_delayed_w]);
+    } else {
+      data = await db.many(query, [date, date_delayed]);
+    }
+
+    res.json(data);
 
   } catch (error) {
     console.log(error);
