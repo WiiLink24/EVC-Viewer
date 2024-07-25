@@ -32,6 +32,8 @@ router.get('/api/polls', async (req:any, res:any) => {
     const limit = req.query.limit || 50;
     const page = req.query.page || 1;
     const language = req.query.language || 'english';
+    const type= req.query.type || 'all';
+    const date = new Date().toISOString().split('T')[0];
 
     const offset = (page - 1) * limit;
 
@@ -43,9 +45,16 @@ router.get('/api/polls', async (req:any, res:any) => {
       [contentColumn, choice1Column, choice2Column] = languageColumns.english;
     }
 
-    const query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions LIMIT $1 OFFSET $2`;
+    let query;
+    if (type === 'all') {
+       query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 ORDER BY date DESC LIMIT $2 OFFSET $3`;
+    } else if (type === 'national') {
+       query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 AND type = 'n' ORDER BY date DESC LIMIT $2 OFFSET $3`;
+    } else if (type === 'worldwide') {
+        query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 AND type = 'w' ORDER BY date DESC LIMIT $2 OFFSET $3`;
+      }
 
-    const data = await db.many(query, [limit, offset]);
+    const data = await db.many(query, [date, limit, offset]);
     let total_items = await db.one(getItemsNumber.polls);
     total_items = total_items.count;
     const total_pages = Math.ceil(total_items / limit);
