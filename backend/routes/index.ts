@@ -70,8 +70,12 @@ router.get('/api/polls/poll/:id', async (req:any, res:any) => {
   try {
     const id = req.params.id;
     const language = req.query.language || 'english';
+    const country = req.query.country || 49;
+    const region = req.query.region;
     const details = req.query.details || false;
-    const country_details = req.query.country_details || 49; //default is USA
+
+    let isNational = false;
+    let response;
 
     let contentColumn, choice1Column, choice2Column;
 
@@ -81,6 +85,7 @@ router.get('/api/polls/poll/:id', async (req:any, res:any) => {
       [contentColumn, choice1Column, choice2Column] = languageColumns.english;
     }
 
+    //query the poll data
     const query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE question_id = $1`;
 
     const poll_data = await db.one(query, id);
@@ -96,11 +101,18 @@ router.get('/api/polls/poll/:id', async (req:any, res:any) => {
     
 
     //process the votes data
-      const votes_query = `SELECT ans_cnt FROM votes WHERE question_id = $1 AND type_cd = 0`;
-      const predictions_query = `SELECT ans_cnt FROM votes WHERE question_id = $1 AND type_cd = 1`;
+      let votes_query = `SELECT ans_cnt, type_cd FROM votes WHERE question_id = $1`;
+      let params = [id];
 
-      const votes_data = await db.many(votes_query, id);
-      const predictions_data = await db.many(predictions_query, id);
+      if (isNational) {
+        votes_query += ` AND country_cd = $2`;
+        params.push(country);
+      }
+
+      const data = await db.many(votes_query, params);
+
+      const votes_data = data.filter((votes:any) => votes.type_cd === 0);
+      const predictions_data = data.filter((votes:any) => votes.type_cd === 1);
 
       //format each ans_cnt
       const votes = votes_data.map((vote:any) => {
@@ -181,8 +193,200 @@ router.get('/api/polls/poll/:id', async (req:any, res:any) => {
       }
     }
 
+    response = {poll_data, results_data};
 
-    res.json({poll_data, results_data});
+    //if details is true, query the votes data for the provided country and/or region
+    if (details) {
+      //first, check if the poll is national or worldwide
+      //if national, query only depending on the region id
+      //if worldwide, query depending on the country id and region id if provided
+      //the worldwide response should return both the country details and region details if the region is provided
+      let country_query = `SELECT ans_cnt, type_cd FROM votes WHERE question_id = $1 AND country_id = $2`;
+      let region_query = `SELECT ans_cnt, type_cd FROM votes WHERE question_id = $1 AND country_id = $2 AND region_id = $3`;
+      let country_data;
+      let region_data;
+
+      if (isNational) {
+        region_data = await db.many(region_query, [id, country, region]);
+      } else {
+        if (region) {
+          country_data = await db.many(country_query, [id, country]);
+          region_data = await db.many(region_query, [id, country, region]);
+        } else {
+          country_data = await db.many(country_query, [id, country]);
+        }
+      }
+
+      let details_data: any = {
+        country: {
+          country_id: parseInt(country),
+          region_id: parseInt(region) || 'none',
+        },
+        country_data: {},
+        region_data: {},
+      };
+      //create 2 objects for country and region details
+      if (country_data) {
+        const country_votes = country_data.filter((votes:any) => votes.type_cd === 0);
+        const country_predictions = country_data.filter((votes:any) => votes.type_cd === 1);
+
+        const country_data_votes = country_votes.map((vote:any) => {
+          return formatAnsCnt(vote.ans_cnt);
+        });
+
+        const country_data_predictions = country_predictions.map((prediction:any) => {
+          return formatAnsCnt(prediction.ans_cnt);
+        });
+
+        const country_total_votes_raw = country_data_votes.reduce((acc:any, curr:any) => {
+          return acc.map((val:any, i:any) => {
+            return val + curr[i];
+          });
+        });
+
+        const country_total_predictions_raw = country_data_predictions.reduce((acc:any, curr:any) => {
+          return acc.map((val:any, i:any) => {
+            return val + curr[i];
+          });
+        });
+
+        details_data.country_data.total_votes = {
+          choice1: {
+            male: country_total_votes_raw[0],
+            female: country_total_votes_raw[1],
+            total: country_total_votes_raw[0] + country_total_votes_raw[1],
+          },
+          choice2: {
+            male: country_total_votes_raw[2],
+            female: country_total_votes_raw[3],
+            total: country_total_votes_raw[2] + country_total_votes_raw[3],
+          },
+          total: country_total_votes_raw[0] + country_total_votes_raw[1] + country_total_votes_raw[2] + country_total_votes_raw[3],
+      },
+
+        details_data.country_data.total_predictions = {
+          choice1: {
+            male: country_total_predictions_raw[0],
+            female: country_total_predictions_raw[1],
+            total: country_total_predictions_raw[0] + country_total_predictions_raw[1],
+          },
+          choice2: {
+            male: country_total_predictions_raw[2],
+            female: country_total_predictions_raw[3],
+            total: country_total_predictions_raw[2] + country_total_predictions_raw[3],
+          },
+          total: country_total_predictions_raw[0] + country_total_predictions_raw[1] + country_total_predictions_raw[2] + country_total_predictions_raw[3],
+
+        }
+
+        details_data.country_data.total_votes_percentage = {
+          choice1: {
+            male: ((country_total_votes_raw[0] / details_data.country_data.total_votes.choice1.total) * 100),
+            female: ((country_total_votes_raw[1] / details_data.country_data.total_votes.choice1.total) * 100),
+            total:((country_total_votes_raw[0] + country_total_votes_raw[1]) / details_data.country_data.total_votes.total) * 100,
+          },
+          choice2: {
+            male: ((country_total_votes_raw[2] / details_data.country_data.total_votes.choice2.total) * 100),
+            female: ((country_total_votes_raw[3] / details_data.country_data.total_votes.choice2.total) * 100),
+            total: ((country_total_votes_raw[2] + country_total_votes_raw[3]) / details_data.country_data.total_votes.total) * 100,
+          }
+        }
+
+        details_data.country_data.total_predictions_percentage = {
+          choice1: {
+            male: ((country_total_predictions_raw[0] / details_data.country_data.total_predictions.choice1.total) * 100),
+            female: ((country_total_predictions_raw[1] / details_data.country_data.total_predictions.choice1.total) * 100),
+            total:((country_total_predictions_raw[0] + country_total_predictions_raw[1]) / details_data.country_data.total_predictions.total) * 100,
+          },
+          choice2: {
+            male: ((country_total_predictions_raw[2] / details_data.country_data.total_predictions.choice2.total) * 100),
+            female: ((country_total_predictions_raw[3] / details_data.country_data.total_predictions.choice2.total) * 100),
+            total: ((country_total_predictions_raw[2] + country_total_predictions_raw[3]) / details_data.country_data.total_predictions.total) * 100,
+          }
+        }
+
+    }
+    if (region_data) {
+      const region_votes = region_data.filter((votes:any) => votes.type_cd === 0);
+      const region_predictions = region_data.filter((votes:any) => votes.type_cd === 1);
+
+      const region_data_votes = region_votes.map((vote:any) => {
+        return formatAnsCnt(vote.ans_cnt);
+      });
+
+      const region_data_predictions = region_predictions.map((prediction:any) => {
+        return formatAnsCnt(prediction.ans_cnt);
+      });
+
+      const region_total_votes_raw = region_data_votes.reduce((acc:any, curr:any) => {
+        return acc.map((val:any, i:any) => {
+          return val + curr[i];
+        });
+      });
+
+      const region_total_predictions_raw = region_data_predictions.reduce((acc:any, curr:any) => {
+        return acc.map((val:any, i:any) => {
+          return val + curr[i];
+        });
+      });
+
+      details_data.region_data.total_votes = {
+        choice1: {
+          male: region_total_votes_raw[0],
+          female: region_total_votes_raw[1],
+          total: region_total_votes_raw[0] + region_total_votes_raw[1],
+        },
+        choice2: {
+          male: region_total_votes_raw[2],
+          female: region_total_votes_raw[3],
+          total: region_total_votes_raw[2] + region_total_votes_raw[3],
+        },
+        total: region_total_votes_raw[0] + region_total_votes_raw[1] + region_total_votes_raw[2] + region_total_votes_raw[3],
+      }
+
+      details_data.region_data.total_predictions = {
+        choice1: {
+          male: region_total_predictions_raw[0],
+          female: region_total_predictions_raw[1],
+          total: region_total_predictions_raw[0] + region_total_predictions_raw[1],
+        },
+        choice2: {
+          male: region_total_predictions_raw[2],
+          female: region_total_predictions_raw[3],
+          total: region_total_predictions_raw[2] + region_total_predictions_raw[3],
+        },
+        total: region_total_predictions_raw[0] + region_total_predictions_raw[1] + region_total_predictions_raw[2] + region_total_predictions_raw[3],
+        }
+
+      details_data.region_data.total_votes_percentage = {
+        choice1: {
+          male: ((region_total_votes_raw[0] / details_data.region_data.total_votes.choice1.total) * 100),
+          female: ((region_total_votes_raw[1] / details_data.region_data.total_votes.choice1.total) * 100),
+          total:((region_total_votes_raw[0] + region_total_votes_raw[1]) / details_data.region_data.total_votes.total) * 100,
+        },
+        choice2: {
+          male: ((region_total_votes_raw[2] / details_data.region_data.total_votes.choice2.total) * 100),
+          female: ((region_total_votes_raw[3] / details_data.region_data.total_votes.choice2.total) * 100),
+          total: ((region_total_votes_raw[2] + region_total_votes_raw[3]) / details_data.region_data.total_votes.total) * 100,
+        }
+        }
+
+      details_data.region_data.total_predictions_percentage = {
+        choice1: {
+          male: ((region_total_predictions_raw[0] / details_data.region_data.total_predictions.choice1.total) * 100),
+          female: ((region_total_predictions_raw[1] / details_data.region_data.total_predictions.choice1.total) * 100),
+          total:((region_total_predictions_raw[0] + region_total_predictions_raw[1]) / details_data.region_data.total_predictions.total) * 100,
+        },
+        choice2: {
+          male: ((region_total_predictions_raw[2] / details_data.region_data.total_predictions.choice2.total) * 100),
+          female: ((region_total_predictions_raw[3] / details_data.region_data.total_predictions.choice2.total) * 100),
+          total: ((region_total_predictions_raw[2] + region_total_predictions_raw[3]) / details_data.region_data.total_predictions.total) * 100,
+        }
+      }
+    }
+    response = {poll_data, results_data, details_data};
+  }
+  res.json(response);
 
   } catch (error) {
     console.log(error);

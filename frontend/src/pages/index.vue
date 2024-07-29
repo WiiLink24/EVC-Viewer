@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { fetchCurrentPolls } from '/backend.ts'
+import { fetchCurrentPolls } from '@/backend'
+import { countries } from '@/countries';
 
 const polls = ref()
 const isLoading = ref(true)
+
+const countries_data = ref(countries)
+console.log(countries_data.value)
+console.log(countries_data.value[1].Name)
+
+console.log(countries[1].Name)
 
 onMounted(async () => {
   try {
     isLoading.value = true
     const response = await fetchCurrentPolls(2)
     polls.value = response.data
-    console.log(polls.value)
   } catch (error) {
     console.error(error)
   } finally {
