@@ -43,9 +43,9 @@
                 <hr
                   style="width: 60px; border-top:2px solid white; transform:translate(0, -5px); margin:0px;"
                 />
-                <a href="/" class="animated-link">Home</a>
-                <a href="/plaza/popular" class="animated-link">Active Polls</a>
-                <a href="/plaza/top" class="animated-link"
+                <a href="#top" class="animated-link">Home</a>
+                <a href="#active" class="animated-link">Active Polls</a>
+                <a href="#past" class="animated-link"
                   >Past Polls</a
                 >
               </div>
