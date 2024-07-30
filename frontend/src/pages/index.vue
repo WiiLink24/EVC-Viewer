@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { fetchCurrentPolls } from '@/backend'
 import { countries } from '@/countries';
+import PollCard from '@/components/PollCard.vue'
 
 const polls = ref()
 const isLoading = ref(true)
@@ -17,6 +18,7 @@ onMounted(async () => {
     isLoading.value = true
     const response = await fetchCurrentPolls(2)
     polls.value = response.data
+    console.log(polls.value)
   } catch (error) {
     console.error(error)
   } finally {
@@ -27,7 +29,10 @@ onMounted(async () => {
 
 <template>
     <h1>AAAA</h1>
-    <div v-for="poll in polls" :key="poll.question_id">
-        <h2>{{ poll.content_english }}</h2>
+    <div v-for="poll in polls">
+      <RouterLink to="`/polls/${poll.question_id}`">
+        <PollCard v-bind="poll" :key="poll.question_id" />
+      </RouterLink>
     </div>
+    
 </template>

@@ -55,6 +55,18 @@ router.get('/api/polls', async (req:any, res:any) => {
       }
 
     const data = await db.many(query, [date, limit, offset]);
+
+    //rename contentColumn, choice1Column and choice2Column to content, choice1 and choice2
+    data.forEach((poll:any) => {
+      poll.content = poll[contentColumn];
+      poll.choice1 = poll[choice1Column];
+      poll.choice2 = poll[choice2Column];
+      delete poll[contentColumn];
+      delete poll[choice1Column];
+      delete poll[choice2Column];
+    });
+
+    
     let total_items = await db.one(getItemsNumber.polls);
     total_items = total_items.count;
     const total_pages = Math.ceil(total_items / limit);
