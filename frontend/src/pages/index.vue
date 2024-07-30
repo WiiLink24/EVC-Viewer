@@ -23,9 +23,19 @@ const updateCurrentPage = (newPage: number) => {
   current_page.value = newPage
 }
 
+if (localStorage.getItem('language') === null) {
+  localStorage.setItem('language', 'english')
+}
+
+if (localStorage.getItem('limit') === null) {
+  localStorage.setItem('limit', '20')
+}
+
 onMounted(async () => {
   try {
     isLoading.value = true
+    language.value = localStorage.getItem('language') ?? 'english';
+    limit.value = parseInt(localStorage.getItem('limit') ?? '20')
     const response = await fetchCurrentPolls(1, language.value, limit.value)
     total_pages.value = response.total_pages
     total_items.value = parseInt(response.total_items)
@@ -40,6 +50,7 @@ onMounted(async () => {
 watch(language, async (newLanguage) => {
   try {
     isLoading.value = true
+    localStorage.setItem('language', newLanguage)
     const response = await fetchCurrentPolls(1, newLanguage, limit.value)
     total_pages.value = response.total_pages
     total_items.value = parseInt(response.total_items)
@@ -54,6 +65,7 @@ watch(language, async (newLanguage) => {
 watch(limit, async (newLimit) => {
   try {
     isLoading.value = true
+    localStorage.setItem('limit', newLimit.toString())
     const response = await fetchCurrentPolls(1, language.value, newLimit)
     total_pages.value = response.total_pages
     total_items.value = parseInt(response.total_items)
@@ -95,7 +107,7 @@ watch(current_page, async (newPage) => {
     <PageNavigation v-if="polls" :total_pages="total_pages" :current_page="current_page" @update:current_page="updateCurrentPage" />
     <div v-if="isLoading">Loading...</div>
     <div v-for="poll in polls">
-      <RouterLink to="`/polls/${poll.question_id}`">
+      <RouterLink :to="`/polls/${poll.question_id}`">
         <PollCard v-bind="poll" :key="poll.question_id" />
       </RouterLink>
     </div>
