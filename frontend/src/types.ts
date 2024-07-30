@@ -1,5 +1,6 @@
 export interface Poll {
     question_id: Number,
+    category: Number,
     content: String,
     choice1: String,
     choice2: String,

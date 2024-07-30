@@ -2,3 +2,182 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
+ul,
+li {
+  transition: 0.2s;
+}
+
+ul:hover li {
+  opacity: 0.3;
+  z-index: 0;
+  transition: 0.2s;
+}
+
+ul:not(:has(li:hover)) li {
+  opacity: 1;
+  transition: 0.2s;
+}
+
+ul li:hover {
+  opacity: 1;
+  transition: 0.2s;
+  z-index: 100;
+}
+
+.outline-text {
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: #ffffff60;
+  font-family: 'Space Grotesk', Roboto;
+  font-weight: 800;
+  color: transparent;
+}
+
+.sticky-container {
+  position: -webkit-sticky; /* For Safari */
+  position: sticky;
+  top: 100px;
+  align-self: flex-start; /* Ensure it aligns to the start of the flex container */
+}
+
+.poll-hover .poll-hover-metadata {
+  transform: translate(0, -3px);
+  color: #00000000;
+  height: 0px;
+  transition: 0.2s;
+}
+
+.poll-hover:hover .poll-hover-metadata {
+  color: #000000;
+  height: 40px;
+  transition: 0.2s;
+}
+
+@media only screen and (min-width: 640px) {
+  .poll-hover .poll-hover-metadata {
+    transform: translate(0, 0px);
+  }
+  .poll-hover {
+    position: relative;
+    transition: 0.2s;
+  }
+
+  .poll-hover span {
+    height: 10px;
+    transition: 0.2s;
+  }
+
+  .poll-hover .poll-response {
+    color: #ffffff00;
+    transition: 0.2s;
+  }
+
+  .poll-hover:hover {
+    transform: translate(0, -35px) scale(1.02);
+  }
+
+  .poll-hover:hover span {
+    height: 35px;
+    transition: 0.2s;
+  }
+
+  .poll-hover:hover .poll-response {
+    color: #ffffff;
+    transition: 0.2s;
+  }
+}
+
+a:hover {
+  text-decoration: none !important;
+}
+
+input[type='range'] {
+  height: 27px;
+  border-radius: 20px 4px 4px 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 10px 0;
+  overflow-x: hidden;
+}
+input[type='range']:focus {
+  outline: none;
+}
+
+input[type='range']::-moz-range-progress {
+  background-color: rgb(151, 162, 182);
+  border-radius: 20px 4px 4px 20px;
+  height: 100%;
+}
+
+input[type='range']::-moz-range-track {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  background-color: rgb(55, 66, 84);
+  border-radius: 20px 4px 4px 20px;
+  animate: 0.2s;
+}
+input[type='range']::-moz-range-thumb {
+  height: 100%;
+  width: 20px;
+  background-color: rgb(151, 162, 182);
+  border-radius: 20px 4px 4px 20px;
+  border: 0;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+input[type='range']:hover::-moz-range-thumb {
+  height: 120%;
+  background-color: rgb(119, 129, 146);
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.header-link {
+  transition: 0.3s;
+  padding: 10px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .header-link:hover {
+    background-color: #ffffff10 !important;
+  }
+}
+
+@media (max-width: 1250px) {
+  .header-link:hover {
+    transform: scale(1.02) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-color: #00000010;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 8px;
+    transition: 0.3s;
+    overflow: hidden;
+  }
+
+  .header-link-index {
+    padding: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 0px 0px 4px 4px;
+    position: relative;
+    @apply bg-gradient-to-b from-gray-400/60 to-gray-400 border-gray-400 dark:from-slate-700/60 dark:to-slate-700 dark:border-slate-700;
+    transition: 0.2s;
+  }
+
+  .header-link-index:hover {
+    padding-bottom: 30px;
+    text-decoration: none !important;
+    transition: 0.2s;
+  }
+}
