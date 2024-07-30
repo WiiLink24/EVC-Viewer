@@ -48,9 +48,9 @@ router.get('/api/polls', async (req:any, res:any) => {
     let query;
     if (type === 'all') {
        query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 ORDER BY date DESC LIMIT $2 OFFSET $3`;
-    } else if (type === 'national') {
+    } else if (type === 'n') {
        query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 AND type = 'n' ORDER BY date DESC LIMIT $2 OFFSET $3`;
-    } else if (type === 'worldwide') {
+    } else if (type === 'w') {
         query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE date <= $1 AND type = 'w' ORDER BY date DESC LIMIT $2 OFFSET $3`;
       }
 
@@ -452,4 +452,3 @@ router.get('/api/polls/current', async (req:any, res:any) => {
 })
 
 module.exports = router;
-
