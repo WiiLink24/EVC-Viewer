@@ -3,6 +3,15 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchPoll } from '@/backend'
 import Title from '@/components/Title.vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Poll Details | EVC Viewing Tool',
+  meta: [
+    { name: 'description', content: 'The content you were looking for could not be found...' },
+    { property: 'og:image', content: '/img/evcseobg.png' }
+  ]
+})
 
 const route = useRoute()
 const id = ref(route.params.id)
