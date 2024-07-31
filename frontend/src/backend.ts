@@ -11,4 +11,3 @@ export async function fetchPoll(id: number, language: string, country?: number, 
   const response = await axios.get(`${api}/api/polls/poll/${id}?language=${language} ${country ? `&country=${country}` : ''}${region ? `&region=${region}` : ''} ${details ? `&details=${details}` : ''}`)	
   return response.data
 }
-

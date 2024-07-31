@@ -36,6 +36,94 @@ ul li:hover {
   color: transparent;
 }
 
+.container {
+  width:30px;
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  border-radius: 8px;
+  background-color: #eee;
+}
+
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+  transition: 0.2s;
+}
+
+.container input:checked ~ .checkmark {
+  background-color: #2196F3;
+  transition: 0.2s;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  transition: 0.2s;
+}
+
+.container input:checked ~ .checkmark:after {
+  display: block;
+  transition: 0.2s;
+}
+
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 10px;
+  height: 15px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg) translate(-2px, -0.5px);
+}
+
+.disabled {
+  opacity: 0.3;
+  cursor:not-allowed;
+  pointer-events: none;
+}
+
+.hidden-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-label {
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.hidden-radio:checked + .radio-label {
+  background-color: rgb(153, 160, 180);
+  transition: background-color 0.3s;
+}
+
 .poll-card-height {
   min-height: 400px;
 }

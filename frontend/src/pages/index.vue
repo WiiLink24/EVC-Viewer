@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { fetchCurrentPolls } from '@/backend'
 import { countries } from '@/countries'
 import Title from '@/components/Title.vue'
@@ -10,6 +10,13 @@ const polls = ref()
 const filteredPolls = ref()
 const isLoading = ref(true)
 
+const countries_array = []
+const countries_array_num = []
+let regions_array = []
+
+const details = ref(false)
+const selectedCountry = ref('1')
+const selectedRegion = ref('1')
 const language = ref('english')
 const available_languages = [
   'english',
@@ -36,8 +43,7 @@ const limit = ref(20)
 const current_page = ref(1)
 const total_pages = ref()
 const total_items = ref()
-
-const countries_data = ref(countries)
+const view_type = ref()
 
 const updateCurrentPage = (newPage: number) => {
   current_page.value = newPage
@@ -51,12 +57,40 @@ if (localStorage.getItem('limit') === null) {
   localStorage.setItem('limit', '20')
 }
 
+if (localStorage.getItem('view_type') === undefined) {
+  localStorage.setItem('view_type', 'all')
+}
+
+if (localStorage.getItem('details') === undefined) {
+  localStorage.setItem('details', 'false')
+}
+
+if (localStorage.getItem('country') === undefined) {
+  localStorage.setItem('country', '1')
+  localStorage.setItem('country_index', '0')
+}
+
+if (localStorage.getItem('region') === undefined) {
+  localStorage.setItem('region', '1')
+}
+
+view_type.value = localStorage.getItem('view_type') ?? 'all'
+
+getCountriesList()
+
 onMounted(async () => {
   try {
     isLoading.value = true
     language.value = localStorage.getItem('language') ?? 'english'
     limit.value = parseInt(localStorage.getItem('limit') ?? '20')
-    const response = await fetchCurrentPolls(1, language.value, limit.value)
+    let is_true = localStorage.getItem('details') === 'true'
+    if (!is_true) {
+      document.getElementById('regionSelect')?.classList.add('disabled')
+    }
+    selectedCountry.value =  localStorage.getItem('country') + ' ' +  localStorage.getItem('country_index')
+    selectedRegion.value = localStorage.getItem('region') + ''
+    details.value = is_true ?? false
+    const response = await fetchCurrentPolls(1, language.value, limit.value, view_type.value)
     total_pages.value = response.total_pages
     total_items.value = parseInt(response.total_items)
     polls.value = response.data
@@ -84,11 +118,41 @@ onMounted(async () => {
   }
 })
 
+watch(details, async (is_enabled) => {
+  localStorage.setItem('details', '' + is_enabled + '')
+  if (localStorage.getItem('details') == 'false') {
+    document.getElementById('regionSelect')?.classList.add('disabled')
+  } else {
+    document.getElementById('regionSelect')?.classList.remove('disabled')
+  }
+})
+
+watch(selectedCountry, async (newCountry) => {
+  try {
+    const [part1, part2] = newCountry.split(' ', 2)
+
+    localStorage.setItem('country', part1)
+    localStorage.setItem('country_index', part2)
+    const index = parseInt(part2, 10)
+    chooseRegion(countries_array[index])
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+watch(selectedRegion, async (newRegion) => {
+  try {
+    localStorage.setItem('region', newRegion)
+  } catch (error) {
+    console.error(error)
+  }
+})
+
 watch(language, async (newLanguage) => {
   try {
     isLoading.value = true
     localStorage.setItem('language', newLanguage)
-    const response = await fetchCurrentPolls(1, newLanguage, limit.value)
+    const response = await fetchCurrentPolls(1, newLanguage, limit.value, view_type.value)
     total_pages.value = response.total_pages
     total_items.value = parseInt(response.total_items)
     polls.value = response.data
@@ -120,7 +184,7 @@ watch(limit, async (newLimit) => {
   try {
     isLoading.value = true
     localStorage.setItem('limit', newLimit.toString())
-    const response = await fetchCurrentPolls(1, language.value, newLimit)
+    const response = await fetchCurrentPolls(1, language.value, newLimit, view_type.value)
     total_pages.value = response.total_pages
     total_items.value = parseInt(response.total_items)
     polls.value = response.data
@@ -154,7 +218,7 @@ watch(limit, async (newLimit) => {
 watch(current_page, async (newPage) => {
   try {
     isLoading.value = true
-    const response = await fetchCurrentPolls(newPage, language.value, limit.value)
+    const response = await fetchCurrentPolls(newPage, language.value, limit.value, view_type.value)
     /* total_pages.value = response.total_pages
     total_items.value = parseInt(response.total_items) */
     polls.value = response.data
@@ -181,6 +245,66 @@ watch(current_page, async (newPage) => {
     isLoading.value = false
   }
 })
+
+watch(view_type, async (newViewType) => {
+  try {
+    isLoading.value = true
+    localStorage.setItem('view_type', newViewType)
+    const response = await fetchCurrentPolls(1, language.value, limit.value, newViewType)
+    polls.value = response.data
+    filteredPolls.value = polls.value.filter((poll) => {
+      if (
+        (poll.type === 'n' && dateDifference(poll.date) <= 7) ||
+        (poll.type === 'w' && dateDifference(poll.date) <= 14)
+      ) {
+        return poll
+      }
+    })
+
+    polls.value = polls.value.filter((poll) => {
+      if (
+        (poll.type === 'n' && dateDifference(poll.date) > 7) ||
+        (poll.type === 'w' && dateDifference(poll.date) > 14)
+      ) {
+        return poll
+      }
+    })
+    if (current_page.value > total_pages.value) {
+      current_page.value = total_pages.value
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isLoading.value = false
+  }
+})
+
+function getCountriesList() {
+  for (const countryId in countries) {
+    if (countries.hasOwnProperty(countryId)) {
+      const country = countries[countryId]
+      countries_array.push(country.Name)
+      countries_array_num.push(countryId)
+    }
+  }
+}
+
+function chooseRegion(selectedCountry: string) {
+  for (const countryId in countries) {
+    if (countries.hasOwnProperty(countryId)) {
+      const country = countries[countryId]
+      if (country.Name === selectedCountry) {
+        regions_array = []
+        for (const subregionId in country.Subregions) {
+          if (country.Subregions.hasOwnProperty(subregionId)) {
+            const subregion = country.Subregions[subregionId]
+            regions_array.push(subregion.en)
+          }
+        }
+      }
+    }
+  }
+}
 
 window.onscroll = function () {
   const scrollPosition = window.scrollY + window.innerHeight
@@ -215,6 +339,44 @@ function dateDifference(date: string) {
   >
     <div class="sticky-container w-96 h-screen flex flex-col justify-between mobile-hide">
       <div>
+        <span class="w-full mb-2 flex flex-row items-center justify-between"
+          ><p class="opacity-30"><i class="fa-solid fa-flag"></i> Country and Region</p>
+          <label class="container flex items-start"
+            ><i
+              class="fa-solid fa-triangle-exclamation text-yellow-400 text-sm"
+              title="If a poll has no submissions for a given region, no data will be shown."
+            ></i>
+            <input
+              checked="checked"
+              type="checkbox"
+              v-model="details"
+              id="showDetails"
+              class="mr-2"
+            />
+            <span class="checkmark"></span> </label
+        ></span>
+        <div id="regionSelect" class="flex flex-row items-center gap-[3px]">
+          <select
+            v-model="selectedCountry"
+            class="mb-8 pl-3 pr-6 w-full h-14 bg-slate-700 hover:bg-slate-600 rounded-l-[20px] rounded-r-md text-white transition-all relative"
+          >
+            <option
+              v-for="(item, index) in countries_array_num"
+              :value="`${countries_array_num[index]} ${index}`"
+              :key="item"
+            >
+              {{ countries_array[index] }}
+            </option>
+          </select>
+          <select
+            v-model="selectedRegion"
+            class="mb-8 pl-3 pr-6 w-full h-14 bg-slate-700 hover:bg-slate-600 rounded-l-md rounded-r-[20px] text-white transition-all relative"
+          >
+            <option v-for="(item, index) in regions_array" :value="index + 1" :key="item">
+              {{ index + 1 }}. {{ item }}
+            </option>
+          </select>
+        </div>
         <p class="mb-2 opacity-30"><i class="fa-solid fa-globe"></i> Poll Language</p>
         <select
           v-model="language"
@@ -232,17 +394,59 @@ function dateDifference(date: string) {
             >{{ limit }}</span
           >
         </div>
+        <p class="mt-6 mb-2 opacity-30"><i class="fa-solid fa-filter"></i> Filter by Type</p>
+        <div class="flex flex-row items-center gap-[3px]">
+          <input
+            type="radio"
+            id="a"
+            name="ViewType"
+            value="all"
+            v-model="view_type"
+            class="hidden-radio"
+          />
+          <label
+            for="a"
+            class="radio-label w-1/3 rounded-l-xl rounded-r-md bg-slate-600 hover:bg-slate-500"
+            ><i class="fa-solid fa-circle w-full text-center text-white"></i
+          ></label>
+
+          <input
+            type="radio"
+            id="n"
+            name="ViewType"
+            value="n"
+            v-model="view_type"
+            class="hidden-radio"
+          />
+          <label for="n" class="radio-label w-1/3 rounded-md bg-slate-600 hover:bg-slate-500"
+            ><i class="fa-solid fa-flag w-full text-center text-white"></i
+          ></label>
+
+          <input
+            type="radio"
+            id="ww"
+            name="ViewType"
+            value="w"
+            v-model="view_type"
+            class="hidden-radio"
+          />
+          <label
+            for="ww"
+            class="radio-label w-1/3 rounded-l-md rounded-r-xl bg-slate-600 hover:bg-slate-500"
+            ><i class="fa-solid fa-globe-americas w-full text-center text-white"></i
+          ></label>
+        </div>
         <hr class="w-full mt-8 border-t-2 border-white" />
         <a
-            class="w-full mt-10 justify-center inline-flex flex-row gap-1 items-center bg-[#2bca38] hover:bg-green-600 hover:scale-105 hover:shadow-xl hover:shadow-green-400/10 hover:no-underline transition-all px-8 py-3 rounded-xl text-white border-2 border-gray-200/10"
-            href="https://www.wiilink24.com/"
-            ><img
-              src="/img/favicon.png"
-              alt="WiiLink Logo"
-              style="filter: brightness(10000); height: 20px !important"
-            />
-            Install WiiLink</a
-          >
+          class="w-full mt-10 justify-center inline-flex flex-row gap-1 items-center bg-[#2bca38] hover:bg-green-600 hover:scale-105 hover:shadow-xl hover:shadow-green-400/10 hover:no-underline transition-all px-8 py-3 rounded-xl text-white border-2 border-gray-200/10"
+          href="https://www.wiilink24.com/"
+          ><img
+            src="/img/favicon.png"
+            alt="WiiLink Logo"
+            style="filter: brightness(10000); height: 20px !important"
+          />
+          Install WiiLink</a
+        >
       </div>
       <PageNavigation
         v-if="polls"
@@ -255,15 +459,23 @@ function dateDifference(date: string) {
     </div>
 
     <ul class="flex flex-col gap-3 items-center sm:items-start">
-      <Title name="Polls" class="w-[95%] max-w-[900px] sm:h-24" />
-      <div v-if="isLoading">Loading...</div>
+      <Title v-if="view_type === 'all'" name="Polls" class="w-[95%] max-w-[900px] sm:h-24" />
+      <Title v-if="view_type === 'n'" name="National" class="w-[95%] max-w-[900px] sm:h-24" />
+      <Title v-if="view_type === 'w'" name="World" class="w-[95%] max-w-[900px] sm:h-24" />
+      <div
+        v-if="isLoading"
+        class="w-full h-[calc(100vh-160px)] p-20 flex flex-col items-center justify-center gap-3 backdrop-blur-lg rounded-2xl border-4 border-dashed border-gray-400/10 dark:border-slate-400/10 -translate-y-16 text-xl dark:text-white"
+      >
+        <img src="/img/loading.gif" class="h-10 brightness-[1000]" /> Getting the latest polls just
+        for you...
+      </div>
       <li
         id="active"
         v-for="(poll, index) in filteredPolls"
         :key="poll.question_id"
         class="w-full sm:h-24 -translate-y-8"
       >
-        <div>
+        <div :class="poll.type === 'n' ? 'national' : poll.type === 'w' ? 'worldwide' : ''">
           <PollCard v-bind="poll" :index="index" />
         </div>
       </li>
