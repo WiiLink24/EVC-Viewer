@@ -451,4 +451,44 @@ router.get('/api/polls/current', async (req:any, res:any) => {
   }
 })
 
+router.post('/api/polls/search', async (req:any, res:any) => {
+  try {
+    const language = req.body.language || 'english';
+    const search = req.body.search;
+
+    const maxLength = 50;
+    if (typeof search !== 'string' || search.length > maxLength || search.length < 3) {
+      return res.status(400).json({ error: 'Invalid search query. Please retry using another term' });
+    }
+
+    let contentColumn, choice1Column, choice2Column;
+
+    if (languageColumns[language]) {
+      [contentColumn, choice1Column, choice2Column] = languageColumns[language];
+    } else {
+      [contentColumn, choice1Column, choice2Column] = languageColumns.english;
+    }
+
+    const query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date FROM questions WHERE ${contentColumn} ILIKE $1 ORDER BY date DESC`;
+
+    const data = await db.many(query, [`%${search}%`]);
+
+    //rename contentColumn, choice1Column and choice2Column to content, choice1 and choice2
+    data.forEach((poll:any) => {
+      poll.content = poll[contentColumn];
+      poll.choice1 = poll[choice1Column];
+      poll.choice2 = poll[choice2Column];
+      delete poll[contentColumn];
+      delete poll[choice1Column];
+      delete poll[choice2Column];
+    });
+
+    res.json(data);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: (error as any).message });
+  }
+})
+
 module.exports = router;
