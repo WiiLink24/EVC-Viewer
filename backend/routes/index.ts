@@ -642,7 +642,7 @@ router.post("/api/polls/search", async (req: any, res: any) => {
     const query = `SELECT question_id, ${contentColumn}, ${choice1Column}, ${choice2Column}, type, category, date 
                FROM questions 
                WHERE ${contentColumn} ILIKE $1 
-               AND date < NOW() 
+               AND date <= NOW() 
                ORDER BY date DESC`;
 
     const data = await db.many(query, [`%${search}%`]);
