@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, defineProps, defineEmits, watch } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
   total_pages: Number,
