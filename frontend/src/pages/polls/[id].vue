@@ -193,8 +193,8 @@ function dateDifference(date: string) {
         </div>
       </div>
     </div>
-    <div class="-top-5 flex flex-row items-center justify-between gap-3 relative">
-      <div class="w-auto flex flex-row items-center gap-[3px]">
+    <div class="-top-5 flex flex-row-reverse items-center justify-between gap-3 relative">
+      <div v-if="country_data" class="w-auto flex flex-row items-center gap-[3px]">
         <input
           type="radio"
           id="country"
