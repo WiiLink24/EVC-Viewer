@@ -59,11 +59,6 @@ onMounted(async () => {
       formatted_region.value = countries[countryId].Subregions[regionId].en
     }
 
-    if (poll_data.value.type === 'n') {
-      formattedType = '<i class="fa-solid fa-flag"></i> National'
-    } else if (poll_data.value.type === 'w') {
-      formattedType = '<i class="fa-solid fa-globe-americas"></i> Worldwide'
-    }
     let isActive = false
     let isNew = false
     formattedDate = new Date(poll_data.value.date).toLocaleDateString()
@@ -131,7 +126,8 @@ function dateDifference(date: string) {
         <i class="fa-solid fa-envelope-open"></i>
       </div>
       <div class="h-11 pt-1 pl-2 pr-2 flex flex-row items-center justify-between text-black">
-        <span v-html="formattedType" class="font-bold"></span>
+        <span v-if="poll_data.type === 'n'" class="font-bold"><i class="fa-solid fa-flag"></i> National</span>
+        <span v-else-if="poll_data.type === 'w'" class="font-bold"><i class="fa-solid fa-globe-americas"></i> Worldwide</span>
         <span class="opacity-60 text-right"
           >{{ poll_data.category }} | {{ formattedDate }}
           <i
