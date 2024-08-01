@@ -87,7 +87,8 @@ onMounted(async () => {
     if (!is_true) {
       document.getElementById('regionSelect')?.classList.add('disabled')
     }
-    selectedCountry.value =  localStorage.getItem('country') + ' ' +  localStorage.getItem('country_index')
+    selectedCountry.value =
+      localStorage.getItem('country') + ' ' + localStorage.getItem('country_index')
     selectedRegion.value = localStorage.getItem('region') + ''
     details.value = is_true ?? false
     const response = await fetchCurrentPolls(1, language.value, limit.value, view_type.value)
@@ -111,6 +112,8 @@ onMounted(async () => {
         return poll
       }
     })
+
+    // Copy the div
   } catch (error) {
     console.error(error)
   } finally {
@@ -335,9 +338,9 @@ function dateDifference(date: string) {
     "
   ></div>
   <div
-    class="top-24 w-full flex flex-row items-center sm:items-start justify-center gap-8 relative"
+    class="left-1/2 -translate-x-1/2 top-24 sm:w-[98%] w-[95%] flex sm:flex-row flex-col items-center sm:items-start justify-center gap-8 relative"
   >
-    <div class="sticky-container w-96 h-screen flex flex-col justify-between mobile-hide">
+    <div class="sticky-container sm:w-96 sm:h-screen flex flex-col justify-between">
       <div>
         <span class="w-full mb-2 flex flex-row items-center justify-between"
           ><p class="opacity-30"><i class="fa-solid fa-flag"></i> Country and Region</p>
@@ -358,7 +361,7 @@ function dateDifference(date: string) {
         <div id="regionSelect" class="flex flex-row items-center gap-[3px]">
           <select
             v-model="selectedCountry"
-            class="mb-8 pl-3 pr-6 w-full h-14 bg-slate-700 hover:bg-slate-600 rounded-l-[20px] rounded-r-md text-white transition-all relative"
+            class="mb-8 pl-3 pr-6 w-full h-14 bg-gray-300 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-l-[20px] rounded-r-md dark:text-white transition-all relative"
           >
             <option
               v-for="(item, index) in countries_array_num"
@@ -370,7 +373,7 @@ function dateDifference(date: string) {
           </select>
           <select
             v-model="selectedRegion"
-            class="mb-8 pl-3 pr-6 w-full h-14 bg-slate-700 hover:bg-slate-600 rounded-l-md rounded-r-[20px] text-white transition-all relative"
+            class="mb-8 pl-3 pr-6 w-full h-14 bg-gray-300 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-l-md rounded-r-[20px] dark:text-white transition-all relative"
           >
             <option v-for="(item, index) in regions_array" :value="index + 1" :key="item">
               {{ index + 1 }}. {{ item }}
@@ -380,7 +383,7 @@ function dateDifference(date: string) {
         <p class="mb-2 opacity-30"><i class="fa-solid fa-globe"></i> Poll Language</p>
         <select
           v-model="language"
-          class="pl-3 pr-6 w-full h-14 bg-slate-700 hover:bg-slate-600 rounded-[20px] text-white transition-all relative"
+          class="pl-3 pr-6 w-full h-14 bg-gray-300 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-[20px] dark:text-white transition-all relative"
         >
           <option v-for="(lang, index) in available_languages" :value="lang" :key="lang">
             {{ formatted_languages[index] }}
@@ -390,7 +393,7 @@ function dateDifference(date: string) {
         <div class="flex items-center gap-1 w-full">
           <input type="range" v-model="limit" :min="20" :max="100" :step="20" class="w-full" />
           <span
-            class="h-[27px] pl-3 pr-3 rounded-l-[4px] rounded-r-[20px] bg-slate-400 flex items-center text-white text-center"
+            class="h-[27px] pl-3 pr-3 rounded-l-[4px] rounded-r-[20px] bg-gray-400 dark:bg-slate-400 flex items-center text-white text-center"
             >{{ limit }}</span
           >
         </div>
@@ -406,8 +409,8 @@ function dateDifference(date: string) {
           />
           <label
             for="a"
-            class="radio-label w-1/3 rounded-l-xl rounded-r-md bg-slate-600 hover:bg-slate-500"
-            ><i class="fa-solid fa-circle w-full text-center text-white"></i
+            class="radio-label w-1/3 rounded-l-xl rounded-r-md bg-gray-300 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-600"
+            ><i class="fa-solid fa-circle w-full text-center dark:text-white"></i
           ></label>
 
           <input
@@ -418,8 +421,10 @@ function dateDifference(date: string) {
             v-model="view_type"
             class="hidden-radio"
           />
-          <label for="n" class="radio-label w-1/3 rounded-md bg-slate-600 hover:bg-slate-500"
-            ><i class="fa-solid fa-flag w-full text-center text-white"></i
+          <label
+            for="n"
+            class="radio-label w-1/3 rounded-md bg-gray-300 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-600"
+            ><i class="fa-solid fa-flag w-full text-center dark:text-white"></i
           ></label>
 
           <input
@@ -432,13 +437,13 @@ function dateDifference(date: string) {
           />
           <label
             for="ww"
-            class="radio-label w-1/3 rounded-l-md rounded-r-xl bg-slate-600 hover:bg-slate-500"
-            ><i class="fa-solid fa-globe-americas w-full text-center text-white"></i
+            class="radio-label w-1/3 rounded-l-md rounded-r-xl bg-gray-300 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-600"
+            ><i class="fa-solid fa-globe-americas w-full text-center dark:text-white"></i
           ></label>
         </div>
-        <hr class="w-full mt-8 border-t-2 border-white" />
+        <hr class="w-full mt-8 border-t-2 dark:border-white" />
         <a
-          class="w-full mt-10 justify-center inline-flex flex-row gap-1 items-center bg-[#2bca38] hover:bg-green-600 hover:scale-105 hover:shadow-xl hover:shadow-green-400/10 hover:no-underline transition-all px-8 py-3 rounded-xl text-white border-2 border-gray-200/10"
+          class="w-full mt-10 justify-center flex-row gap-1 items-center bg-[#2bca38] hover:bg-green-600 hover:scale-105 hover:shadow-xl hover:shadow-green-400/10 hover:no-underline transition-all px-8 py-3 rounded-xl text-white border-2 border-gray-200/10 sm:inline-flex hidden"
           href="https://www.wiilink24.com/"
           ><img
             src="/img/favicon.png"
@@ -451,7 +456,7 @@ function dateDifference(date: string) {
       <PageNavigation
         v-if="polls"
         id="stickyNav"
-        class="w-[95%] max-w-[900px] sm:h-24 -translate-y-24 transition-all"
+        class="sm:flex hidden w-[95%] max-w-[900px] sm:h-24 -translate-y-24 transition-all"
         :total_pages="total_pages"
         :current_page="current_page"
         @update:current_page="updateCurrentPage"
@@ -466,8 +471,8 @@ function dateDifference(date: string) {
         v-if="isLoading"
         class="w-full h-[calc(100vh-160px)] p-20 flex flex-col items-center justify-center gap-3 backdrop-blur-lg rounded-2xl border-4 border-dashed border-gray-400/10 dark:border-slate-400/10 -translate-y-16 text-xl dark:text-white"
       >
-        <img src="/img/loading.gif" class="h-10 brightness-[1000]" /> Getting the latest polls just
-        for you...
+        <img src="/img/loading.gif" class="h-10 brightness-[1000] invert dark:invert-0" /> Getting
+        the latest polls just for you...
       </div>
       <li
         id="active"
@@ -480,8 +485,10 @@ function dateDifference(date: string) {
         </div>
       </li>
       <div class="w-full flex flex-row items-center gap-3 mt-3 mb-3 -translate-y-8">
-        <hr class="flex-grow border-t-2 border-white" />
-        <p class="text-white opacity-30"><i class="fa-solid fa-rotate-left"></i> Ended Polls</p>
+        <hr class="flex-grow border-t-2 dark:border-white/30" />
+        <p class="dark:text-white opacity-30">
+          <i class="fa-solid fa-rotate-left"></i> Ended Polls
+        </p>
       </div>
       <li
         id="past"

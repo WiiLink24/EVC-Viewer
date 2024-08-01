@@ -33,7 +33,7 @@ const emitCurrentPage = () => {
 
 <template>
   <div class="inline-flex items-center gap-5 w-full justify-between">
-    <p class="opacity-60 text-black">
+    <p class="opacity-60 text-black dark:text-white">
       Showing page <b id="curr">{{ current_page }}</b> of <b id="last">{{ total_pages }}</b>
     </p>
     <div v-if="props.total_pages > 1" class="flex flex-row items-center gap-1">

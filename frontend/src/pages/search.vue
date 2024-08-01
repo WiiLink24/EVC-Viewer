@@ -80,7 +80,7 @@ onMounted(() => {
       );
     "
   ></div>
-  <div class="top-10 left-1/2 -translate-x-1/2 max-w-[1090px] translate-y-14 relative">
+  <div class="top-10 left-1/2 -translate-x-1/2 w-[95%] max-w-[1090px] translate-y-14 relative">
     <Title icon="fa-solid fa-magnifying-glass" name="Search" />
     <div class="w-full -translate-y-8 flex flex-row gap-1 relative">
       <input
@@ -93,7 +93,7 @@ onMounted(() => {
       />
       <select
         v-model="language"
-        class="pl-3 pr-6 bg-gray-200 dark:bg-slate-600 hover:bg-gray-300 dark:hover:bg-slate-700 rounded-[4px] dark:text-white transition-all relative"
+        class="w-12 sm:w-auto pl-3 pr-6 bg-gray-200/60 dark:bg-slate-600/60 hover:bg-gray-300 dark:hover:bg-slate-700 backdrop-blur-md rounded-[4px] dark:text-white transition-all relative"
       >
         <option v-for="(lang, index) in available_languages" :value="lang" :key="lang">
           {{ formatted_languages[index] }}

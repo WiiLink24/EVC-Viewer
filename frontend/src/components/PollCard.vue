@@ -46,7 +46,7 @@ let randomPercentage2 = ref(`${100 - randomPercentage}%`)
 </script>
 
 <template>
-  <div class="poll-hover pl-1 pr-1 pb-1 bg-white rounded-[20px]">
+  <div class="poll-hover pl-1 pr-1 pb-1 bg-gray-200 dark:bg-white rounded-[20px]">
     <div
       v-if="isNew === true"
       class="isNew left-0 top-0 w-20 bg-yellow-300 text-black text-center rounded-tl-xl rounded-br-xl p-1 transition-all absolute"

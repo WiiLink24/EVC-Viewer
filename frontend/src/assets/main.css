@@ -10,7 +10,11 @@ h2 {
   @apply dark:text-white;
   font-family: 'Space Grotesk', Roboto;
   font-weight: 800;
-  font-size:25px;
+  font-size: 25px;
+}
+
+p {
+  @apply text-black dark:text-white;
 }
 
 ul,
@@ -44,7 +48,7 @@ ul li:hover {
 }
 
 .container {
-  width:30px;
+  width: 30px;
   display: block;
   position: relative;
   padding-left: 35px;
@@ -80,12 +84,12 @@ ul li:hover {
 }
 
 .container input:checked ~ .checkmark {
-  background-color: #2196F3;
+  background-color: #2196f3;
   transition: 0.2s;
 }
 
 .checkmark:after {
-  content: "";
+  content: '';
   position: absolute;
   display: none;
   transition: 0.2s;
@@ -108,7 +112,7 @@ ul li:hover {
 
 .disabled {
   opacity: 0.3;
-  cursor:not-allowed;
+  cursor: not-allowed;
   pointer-events: none;
 }
 
@@ -127,7 +131,7 @@ ul li:hover {
 }
 
 .hidden-radio:checked + .radio-label {
-  background-color: rgb(153, 160, 180);
+  @apply bg-gray-400 dark:bg-slate-600;
   transition: background-color 0.3s;
 }
 
@@ -162,10 +166,10 @@ ul li:hover {
 }
 
 .sticky-container {
-  position: -webkit-sticky; /* For Safari */
+  position: -webkit-sticky;
   position: sticky;
   top: 100px;
-  align-self: flex-start; /* Ensure it aligns to the start of the flex container */
+  align-self: flex-start;
 }
 
 .poll-hover .poll-hover-metadata {
@@ -179,6 +183,15 @@ ul li:hover {
   color: #000000;
   height: 40px;
   transition: 0.2s;
+}
+
+@media only screen and (max-width: 640px) {
+  .sticky-container {
+    position: static !important;
+    display: block !important;
+    top: 0px !important;
+    align-self: flex-start !important;
+  }
 }
 
 @media only screen and (min-width: 640px) {
@@ -246,26 +259,25 @@ input[type='range']:focus {
   outline: none;
 }
 
-/* Firefox */
 input[type='range']::-moz-range-progress {
-  background-color: rgb(151, 162, 182);
+  @apply bg-gray-400 dark:bg-slate-400;
   border-radius: 20px 4px 4px 20px;
   height: 100%;
 }
 
 input[type='range']::-moz-range-track {
+  @apply bg-gray-300 dark:bg-slate-600;
   width: 100%;
   height: 100%;
   cursor: pointer;
-  background-color: rgb(55, 66, 84);
   border-radius: 20px 4px 4px 20px;
   animate: 0.2s;
 }
 
 input[type='range']::-moz-range-thumb {
+  @apply bg-gray-400 dark:bg-slate-400;
   height: 100%;
   width: 20px;
-  background-color: rgb(151, 162, 182);
   border-radius: 20px 4px 4px 20px;
   border: 0;
   cursor: pointer;
@@ -273,47 +285,110 @@ input[type='range']::-moz-range-thumb {
 }
 
 input[type='range']:hover::-moz-range-thumb {
+  @apply bg-gray-500 dark:bg-slate-500;
   height: 120%;
-  background-color: rgb(119, 129, 146);
   border-radius: 4px;
   transition: 0.2s;
 }
 
-/* WebKit (Safari and Chrome) */
 input[type='range']::-webkit-slider-runnable-track {
+  @apply bg-gray-300 dark:bg-slate-600;
   width: 100%;
   height: 100%;
   cursor: pointer;
-  background-color: rgb(55, 66, 84);
   border-radius: 20px 4px 4px 20px;
   animate: 0.2s;
 }
 
 input[type='range']::-webkit-slider-thumb {
+  @apply bg-gray-400 dark:bg-slate-400;
   height: 100%;
   width: 20px;
-  background-color: rgb(151, 162, 182);
   border-radius: 20px 4px 4px 20px;
   border: 0;
   cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -2px; /* Adjust if necessary */
   transition: 0.2s;
+  -webkit-appearance: none;
+  margin-top: -1px; /* Adjust for alignment */
 }
 
 input[type='range']:hover::-webkit-slider-thumb {
+  @apply bg-gray-500 dark:bg-slate-500;
   height: 120%;
-  background-color: rgb(119, 129, 146);
   border-radius: 4px;
   transition: 0.2s;
 }
 
 .header-link {
+  @apply text-black dark:text-white;
   transition: 0.3s;
   padding: 10px;
   border-radius: 8px;
   position: relative;
   overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .header-link:hover {
+    background-color: #ffffff10 !important;
+  }
+}
+
+.header-link:hover {
+  transform: scale(1.02) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: #00000010;
+  text-decoration: none;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 8px;
+  transition: 0.3s;
+  overflow: hidden;
+}
+
+.header-link-index {
+  padding: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  border-radius: 0px 0px 4px 4px;
+  position: relative;
+  @apply bg-gradient-to-b from-gray-400/60 to-gray-400 border-gray-400 dark:from-slate-700/60 dark:to-slate-700 dark:border-slate-700;
+  transition: 0.2s;
+}
+
+.header-link-index:hover {
+  padding-bottom: 30px;
+  text-decoration: none !important;
+  transition: 0.2s;
+}
+
+li:nth-child(1) .header-link-index {
+  border-radius: 0px 0px 4px 16px;
+}
+
+li:nth-child(6) .header-link-index {
+  border-radius: 0px 0px 16px 4px;
+}
+
+#mobile-menu {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 0%;
+  animation: slideUp 0.2s ease-in-out forwards;
+  overflow: hidden;
+  z-index: 1;
+  position: fixed;
+}
+
+@keyframes slideUp {
+  0% {
+    height: 0%;
+  }
+  100% {
+    height: 100%;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -353,8 +428,14 @@ input[type='range']:hover::-webkit-slider-thumb {
   }
 }
 
-@media only screen and (max-width: 650px) {
+@media only screen and (max-width: 950px) {
   .mobile-hide {
     display: none;
+  }
+  .mobile-hide-flex {
+    display: none;
+  }
+  .mobile-show {
+    display: block;
   }
 }

@@ -86,8 +86,8 @@ let male_prediction_vote_intention_percentage =
     </span>
   </div>
 
-  <div class="w-full mt-12 flex flex-row items-center gap-1 mb-3">
-    <p class="text-white"><i class="fa-solid fa-person-dress"></i> Female statistics</p>
+  <div class="w-full mt-12 flex flex-row items-center gap-3 mb-3">
+    <p class="dark:text-white"><i class="fa-solid fa-person-dress"></i> Female statistics</p>
     <hr class="flex-grow border-t-2 border-pink-500 opacity-100" />
   </div>
   <div class="h-auto min-h-10 mt-2 w-full flex flex-row items-stretch gap-1">
@@ -142,8 +142,8 @@ let male_prediction_vote_intention_percentage =
     </span>
   </div>
 
-  <div class="w-full flex flex-row items-center gap-1 mt-3 mb-3">
-    <p class="text-white"><i class="fa-solid fa-person"></i> Male statistics</p>
+  <div class="w-full flex flex-row items-center gap-3 mt-3 mb-3">
+    <p class="dark:text-white"><i class="fa-solid fa-person"></i> Male statistics</p>
     <hr class="flex-grow border-t-2 border-blue-500 opacity-100" />
   </div>
   <div class="h-auto min-h-10 mt-2 w-full flex flex-row items-stretch gap-1">

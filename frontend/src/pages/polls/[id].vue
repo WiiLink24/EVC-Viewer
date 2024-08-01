@@ -114,16 +114,16 @@ function dateDifference(date: string) {
 <template>
   <div
     v-if="isLoading"
-    class="w-full h-[calc(100vh-160px)] p-20 flex flex-col items-center justify-center gap-3 -translate-y-16 text-xl dark:text-white"
+    class="w-full h-[calc(100vh-160px)] p-20 flex flex-col items-center justify-center gap-3 -translate-y-16 text-xl text-black dark:text-white"
   >
-    <img src="/img/loading.gif" class="h-10 brightness-[1000]" /> Getting this poll data ready...
+    <img src="/img/loading.gif" class="h-10 brightness-[1000] invert dark:invert-0" /> Getting this poll data ready...
   </div>
   <div
     v-if="poll"
     class="top-24 mb-24 left-1/2 -translate-x-1/2 2 relative w-[95%] sm:max-w-[900px]"
   >
     <Title :name="poll_data.content.substring(0, 10) + '...'" />
-    <div class="-top-10 pl-1 pr-1 pb-1 bg-white rounded-[20px] relative">
+    <div class="-top-10 pl-1 pr-1 pb-1 bg-gray-200 dark:bg-white rounded-[20px] relative">
       <div
         v-if="poll_data.isNew === true"
         class="isNew left-0 top-0 w-20 bg-yellow-300 text-black text-center rounded-tl-xl rounded-br-xl p-1 transition-all absolute"
@@ -205,7 +205,7 @@ function dateDifference(date: string) {
         />
         <label
           for="country"
-          class="radio-label rounded-l-xl rounded-r-md bg-slate-600 hover:bg-slate-500 dark:text-white"
+          class="radio-label rounded-l-xl rounded-r-md bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white"
           ><i class="fa-solid fa-flag"></i> {{ formatted_country }}</label
         >
 
@@ -219,7 +219,7 @@ function dateDifference(date: string) {
         />
         <label
           for="region"
-          class="radio-label rounded-l-md rounded-r-xl bg-slate-600 hover:bg-slate-500 dark:text-white"
+          class="radio-label rounded-l-md rounded-r-xl bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white"
           ><i class="fa-regular fa-flag"></i> {{ formatted_region }}</label
         >
       </div>
@@ -233,14 +233,14 @@ function dateDifference(date: string) {
         <div v-if="view_type === 'country'">
           <div class="flex flex-row items-center justify-between gap-3">
             <h2>Details for {{ formatted_country }}</h2>
-            <p class="opacity-30">Scroll down for worldwide details</p>
+            <p class="opacity-30 text-right">Scroll down for worldwide details</p>
           </div>
           <DetailedChart v-bind="country_data" />
         </div>
         <div v-else>
           <div class="flex flex-row items-center justify-between gap-3">
             <h2>Details for {{ formatted_region }}</h2>
-            <p class="opacity-30">Scroll down for worldwide details</p>
+            <p class="opacity-30 text-right">Scroll down for worldwide details</p>
           </div>
           <DetailedChart v-bind="region_data" />
         </div>
@@ -251,15 +251,15 @@ function dateDifference(date: string) {
     <DetailedChart v-bind="votes_data" />
   </div>
   <div
-    v-else
-    class="top-24 left-1/2 w-[95%] h-[calc(100vh-300px)] -translate-x-1/2 p-20 flex flex-col items-center justify-center gap-3 backdrop-blur-lg rounded-2xl border-4 border-dashed border-gray-400/10 dark:border-slate-400/10 text-xl dark:text-white relative"
+    v-else-if="!isLoading"
+    class="top-24 left-1/2 w-[95%] sm:h-[calc(100vh-300px)] -translate-x-1/2 sm:p-20 p-6 flex flex-col items-center justify-center gap-3 backdrop-blur-lg rounded-2xl border-4 border-dashed border-gray-400/60 dark:border-slate-400/10 text-xl dark:text-white relative"
   >
     <p class="max-w-[950px] flex flex-col items-center justify-center gap-3 text-center">
       <i class="fa-solid fa-bomb text-6xl"></i>
       Either this poll does not exist, or there is no data associated to your specific region...<br />Modify
       your preferences and try again <br /><br />
       <span
-        class="mt-8 p-5 rounded-xl bg-gray-400 dark:bg-slate-700 text-sm text-left opacity-60 hover:opacity-100 transition-all"
+        class="mt-8 p-5 rounded-xl bg-gray-300 dark:bg-slate-700 text-sm text-left opacity-60 hover:opacity-100 transition-all"
       >
         <i class="fa-solid fa-question-circle"></i><b> Reasons why you might be seeing this</b
         ><br />
