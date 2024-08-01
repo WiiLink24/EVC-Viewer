@@ -6,6 +6,13 @@ html {
   scroll-behavior: smooth;
 }
 
+h2 {
+  @apply dark:text-white;
+  font-family: 'Space Grotesk', Roboto;
+  font-weight: 800;
+  font-size:25px;
+}
+
 ul,
 li {
   transition: 0.2s;

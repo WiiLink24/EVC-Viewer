@@ -3,8 +3,6 @@ import { defineProps, ref } from 'vue'
 import { type Poll } from '@/types'
 
 let props = defineProps<Poll>()
-let index = props.index
-
 let formattedType = props.type
 
 if (props.type === 'n') {

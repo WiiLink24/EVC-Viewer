@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchPoll } from '@/backend'
+import { countries } from '@/countries'
 import Title from '@/components/Title.vue'
+import DetailedChart from '@/components/DetailedChart.vue'
 import { useHead } from '@unhead/vue'
 
 useHead({
@@ -22,22 +24,17 @@ const poll = ref()
 const poll_data = ref()
 const votes_data = ref()
 const details_data = ref()
-let formattedType = ''
-let formattedDate = ''
-let female_vote_percentage
-let female_predictions_percentage
-let male_vote_percentage
-let male_predictions_percentage
+const country_data = ref()
+const region_data = ref()
+let formattedType = ref('')
+let formattedDate = ref('')
+const formatted_country = ref('')
+const formatted_region = ref('')
+const view_type = ref()
 
-let country_female_vote_percentage
-let country_female_predictions_percentage
-let country_male_vote_percentage
-let country_male_predictions_percentage
-
-let region_female_vote_percentage
-let region_female_predictions_percentage
-let region_male_vote_percentage
-let region_male_predictions_percentage
+if (localStorage.getItem('details_view') === null) {
+  localStorage.setItem('details_view', 'country')
+}
 
 const language = ref(localStorage.getItem('language') || 'english')
 const country = ref(parseInt(localStorage.getItem('country')) || 49)
@@ -46,74 +43,22 @@ let details = localStorage.getItem('details') === 'true'
 
 onMounted(async () => {
   try {
+    view_type.value = localStorage.getItem('details_view') || 'country'
     isLoading.value = true
     poll.value = await fetchPoll(id.value, language.value, country.value, region.value, details)
     poll_data.value = poll.value.poll_data
     votes_data.value = poll.value.results_data
-    let female_vote =
-      votes_data.value.total_votes.choice1.female + votes_data.value.total_votes.choice2.female
-    female_vote_percentage = (votes_data.value.total_votes.choice2.female / female_vote) * 100
-    let male_vote =
-      votes_data.value.total_votes.choice1.male + votes_data.value.total_votes.choice2.male
-    male_vote_percentage = (votes_data.value.total_votes.choice2.male / male_vote) * 100
-    let female_predictions =
-      votes_data.value.total_predictions.choice1.female +
-      votes_data.value.total_predictions.choice2.female
-    female_predictions_percentage =
-      (votes_data.value.total_predictions.choice2.female / female_predictions) * 100
-    let male_predictions =
-      votes_data.value.total_predictions.choice1.male +
-      votes_data.value.total_predictions.choice2.male
-    male_predictions_percentage =
-      (votes_data.value.total_predictions.choice2.male / male_predictions) * 100
-    if (details === true) {
-      details_data.value = poll.value.details_data
-      let country_female_vote =
-        details_data.value.country_data.total_votes.choice1.female + details_data.value.country_data.total_votes.choice2.female
-      country_female_vote_percentage =
-        (details_data.value.country_data.total_votes.choice2.female / country_female_vote) * 100
+    if (details) {
+      country_data.value = poll.value.details_data.country_data
+      region_data.value = poll.value.details_data.region_data
 
-      let country_male_vote =
-        details_data.value.country_data.total_votes.choice1.male + details_data.value.country_data.total_votes.choice2.male
-      country_male_vote_percentage =
-        (details_data.value.country_data.total_votes.choice2.male / country_male_vote) * 100
+      const countryId = poll.value.details_data.country.country_id
+      const regionId = poll.value.details_data.country.region_id
 
-      let country_female_predictions =
-        details_data.value.country_data.total_predictions.choice1.female +
-        details_data.value.country_data.total_predictions.choice2.female
-      country_female_predictions_percentage =
-        (details_data.value.country_data.total_predictions.choice2.female / country_female_predictions) * 100
-
-      let country_male_predictions =
-        details_data.value.country_data.total_predictions.choice1.male +
-        details_data.value.country_data.total_predictions.choice2.male
-      country_male_predictions_percentage =
-        (details_data.value.country_data.total_predictions.choice2.male / country_male_predictions) * 100
-
-
-         details_data.value = poll.value.details_data
-      let region_female_vote =
-        details_data.value.region_data.total_votes.choice1.female + details_data.value.region_data.total_votes.choice2.female
-      region_female_vote_percentage =
-        (details_data.value.region_data.total_votes.choice2.female / region_female_vote) * 100
-
-      let region_male_vote =
-        details_data.value.region_data.total_votes.choice1.male + details_data.value.region_data.total_votes.choice2.male
-      region_male_vote_percentage =
-        (details_data.value.region_data.total_votes.choice2.male / region_male_vote) * 100
-
-      let region_female_predictions =
-        details_data.value.region_data.total_predictions.choice1.female +
-        details_data.value.region_data.total_predictions.choice2.female
-      region_female_predictions_percentage =
-        (details_data.value.region_data.total_predictions.choice2.female / region_female_predictions) * 100
-
-      let region_male_predictions =
-        details_data.value.region_data.total_predictions.choice1.male +
-        details_data.value.region_data.total_predictions.choice2.male
-      region_male_predictions_percentage =
-        (details_data.value.region_data.total_predictions.choice2.male / region_male_predictions) * 100
+      formatted_country.value = countries[countryId].Name
+      formatted_region.value = countries[countryId].Subregions[regionId].en
     }
+
     if (poll_data.value.type === 'n') {
       formattedType = '<i class="fa-solid fa-flag"></i> National'
     } else if (poll_data.value.type === 'w') {
@@ -148,6 +93,15 @@ onMounted(async () => {
   }
 })
 
+watch(view_type, async (newValue) => {
+  try {
+    localStorage.setItem('details_view', newValue)
+    view_type.value = newValue
+  } catch (error) {
+    console.error(error)
+  }
+})
+
 function dateDifference(date: string) {
   let currentDate = new Date()
   let pollDate = new Date(date)
@@ -164,7 +118,10 @@ function dateDifference(date: string) {
   >
     <img src="/img/loading.gif" class="h-10 brightness-[1000]" /> Getting this poll data ready...
   </div>
-  <div v-if="poll" class="top-24 mb-24 left-1/2 -translate-x-1/2 2 relative w-[95%] sm:max-w-[900px]">
+  <div
+    v-if="poll"
+    class="top-24 mb-24 left-1/2 -translate-x-1/2 2 relative w-[95%] sm:max-w-[900px]"
+  >
     <Title :name="poll_data.content.substring(0, 10) + '...'" />
     <div class="-top-10 pl-1 pr-1 pb-1 bg-white rounded-[20px] relative">
       <div
@@ -236,693 +193,62 @@ function dateDifference(date: string) {
         </div>
       </div>
     </div>
-    <p class="-top-8 text-right opacity-30 relative">
-      {{ votes_data.total_votes.total }} votes received
-    </p>
+    <div class="-top-5 flex flex-row items-center justify-between gap-3 relative">
+      <div class="w-auto flex flex-row items-center gap-[3px]">
+        <input
+          type="radio"
+          id="country"
+          name="ViewType"
+          value="country"
+          v-model="view_type"
+          class="hidden-radio"
+        />
+        <label
+          for="country"
+          class="radio-label rounded-l-xl rounded-r-md bg-slate-600 hover:bg-slate-500 dark:text-white"
+          ><i class="fa-solid fa-flag"></i> {{ formatted_country }}</label
+        >
+
+        <input
+          type="radio"
+          id="region"
+          name="ViewType"
+          value="region"
+          v-model="view_type"
+          class="hidden-radio"
+        />
+        <label
+          for="region"
+          class="radio-label rounded-l-md rounded-r-xl bg-slate-600 hover:bg-slate-500 dark:text-white"
+          ><i class="fa-regular fa-flag"></i> {{ formatted_region }}</label
+        >
+      </div>
+      <p class="text-right opacity-30 relative">
+        {{ votes_data.total_votes.total }} votes received
+      </p>
+    </div>
     <hr v-if="details_data" class="w-full mb-10 border-t-2 border-white" />
-    <div v-if="details_data">
-      <div class="flex flex-row items-center justify-between gap-1">
-        <p><b>Results from your Country</b></p>
+    <div v-if="country_data">
+      <div v-if="country_data" class="mt-3">
+        <div v-if="view_type === 'country'">
+          <div class="flex flex-row items-center justify-between gap-3">
+            <h2>Details for {{ formatted_country }}</h2>
+            <p class="opacity-30">Scroll down for worldwide details</p>
+          </div>
+          <DetailedChart v-bind="country_data" />
+        </div>
+        <div v-else>
+          <div class="flex flex-row items-center justify-between gap-3">
+            <h2>Details for {{ formatted_region }}</h2>
+            <p class="opacity-30">Scroll down for worldwide details</p>
+          </div>
+          <DetailedChart v-bind="region_data" />
+        </div>
       </div>
-      <div class="h-10 mt-3 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md rounded-bl-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.country_data.total_votes_percentage.choice1.male +
-                details_data.country_data.total_votes_percentage.choice2.male) /
-                2 +
-              '%'
-          }"
-        >
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.country_data.total_votes_percentage.choice1.male +
-                  details_data.country_data.total_votes_percentage.choice2.male) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.country_data.total_votes.choice1.male +
-              details_data.country_data.total_votes.choice2.male
-            }}
-            votes)</span
-          >
-          <span><i class="fa-solid fa-person"></i> Male</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-l-md rounded-br-md text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.country_data.total_votes_percentage.choice1.female +
-                details_data.country_data.total_votes_percentage.choice2.female) /
-                2 +
-              '%'
-          }"
-        >
-          <span><i class="fa-solid fa-person-dress"></i> Female</span>
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.country_data.total_votes_percentage.choice1.female +
-                  details_data.country_data.total_votes_percentage.choice2.female) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.country_data.total_votes.choice1.female +
-              details_data.country_data.total_votes.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-      <div class="h-10 mt-1 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md rounded-tl-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.country_data.total_predictions_percentage.choice1.male +
-                details_data.country_data.total_predictions_percentage.choice2.male) /
-                2 +
-              '%'
-          }"
-        >
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.country_data.total_predictions_percentage.choice1.male +
-                  details_data.country_data.total_predictions_percentage.choice2.male) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.country_data.total_predictions.choice1.male +
-              details_data.country_data.total_predictions.choice2.male
-            }}
-            votes)</span
-          >
-          <span class="opacity-30">Prediction</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md rounded-tr-md text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.country_data.total_predictions_percentage.choice1.female +
-                details_data.country_data.total_predictions_percentage.choice2.female) /
-                2 +
-              '%'
-          }"
-        >
-          <span></span>
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.country_data.total_predictions_percentage.choice1.female +
-                  details_data.country_data.total_predictions_percentage.choice2.female) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.country_data.total_predictions.choice1.female +
-              details_data.country_data.total_predictions.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-
-      <div class="w-full mt-12 flex flex-row items-center gap-1 mb-3">
-        <p class="text-white"><i class="fa-solid fa-person-dress"></i> Female statistics</p>
-        <hr class="flex-grow border-t-2 border-pink-500 opacity-100" />
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - country_female_vote_percentage + '%' }"
-        >
-          <span class="opacity-60"
-            >{{ (100 - country_female_vote_percentage).toFixed(2) + '%' }} ({{
-              details_data.country_data.total_votes.choice1.female
-            }}
-            votes)</span
-          >
-          <span>{{ poll_data.choice1 }}</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: country_female_vote_percentage + '%' }"
-        >
-          <span>{{ poll_data.choice2 }}</span>
-          <span class="opacity-60 text-left"
-            >{{ country_female_vote_percentage.toFixed(2) + '%' }} ({{
-              details_data.country_data.total_votes.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - country_female_predictions_percentage + '%' }"
-        >
-          <span class="opacity-60 text-left"
-            >{{ (100 - country_female_predictions_percentage).toFixed(2) + '%' }} ({{
-              details_data.country_data.total_predictions.choice1.female
-            }}
-            votes)</span
-          >
-          <span class="opacity-30">Prediction</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: country_female_predictions_percentage + '%' }"
-        >
-          <span></span>
-          <span class="opacity-60"
-            >{{ country_female_predictions_percentage.toFixed(2) + '%' }} ({{
-              details_data.country_data.total_predictions.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-
-      <div class="w-full flex flex-row items-center gap-1 mt-3 mb-3">
-        <p class="text-white"><i class="fa-solid fa-person"></i> Male statistics</p>
-        <hr class="flex-grow border-t-2 border-blue-500 opacity-100" />
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - country_male_vote_percentage + '%' }"
-        >
-          <span class="opacity-60 text-left"
-            >{{ (100 - country_male_vote_percentage).toFixed(2) + '%' }} ({{
-              details_data.country_data.total_votes.choice1.male
-            }}
-            votes)</span
-          >
-          <span>{{ poll_data.choice1 }}</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: country_male_vote_percentage + '%' }"
-        >
-          <span>{{ poll_data.choice2 }}</span>
-          <span class="opacity-60"
-            >{{ country_male_vote_percentage.toFixed(2) + '%' }} ({{
-              details_data.country_data.total_votes.choice2.male
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - country_male_predictions_percentage + '%' }"
-        >
-          <span class="text-left opacity-60"
-            >{{ (100 - country_male_predictions_percentage).toFixed(2) + '%' }} ({{
-              details_data.country_data.total_predictions.choice1.male
-            }}
-            votes)</span
-          >
-          <span> <span class="opacity-30">Prediction</span></span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: country_male_predictions_percentage + '%' }"
-        >
-          <span></span>
-          <span class="opacity-60"
-            >{{ country_male_predictions_percentage.toFixed(2) + '%' }} ({{
-              details_data.country_data.total_predictions.choice2.male
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
+      <hr class="mt-10 mb-10" />
     </div>
-
-
-    <div v-if="details_data">
-      <div class="mt-10 flex flex-row items-center justify-between gap-1">
-        <p><b>Results from your Region</b></p>
-      </div>
-      <div class="h-10 mt-3 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md rounded-bl-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.region_data.total_votes_percentage.choice1.male +
-                details_data.region_data.total_votes_percentage.choice2.male) /
-                2 +
-              '%'
-          }"
-        >
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.region_data.total_votes_percentage.choice1.male +
-                  details_data.region_data.total_votes_percentage.choice2.male) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.region_data.total_votes.choice1.male +
-              details_data.region_data.total_votes.choice2.male
-            }}
-            votes)</span
-          >
-          <span><i class="fa-solid fa-person"></i> Male</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-l-md rounded-br-md text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.region_data.total_votes_percentage.choice1.female +
-                details_data.region_data.total_votes_percentage.choice2.female) /
-                2 +
-              '%'
-          }"
-        >
-          <span><i class="fa-solid fa-person-dress"></i> Female</span>
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.region_data.total_votes_percentage.choice1.female +
-                  details_data.region_data.total_votes_percentage.choice2.female) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.region_data.total_votes.choice1.female +
-              details_data.region_data.total_votes.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-      <div class="h-10 mt-1 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md rounded-tl-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.region_data.total_predictions_percentage.choice1.male +
-                details_data.region_data.total_predictions_percentage.choice2.male) /
-                2 +
-              '%'
-          }"
-        >
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.region_data.total_predictions_percentage.choice1.male +
-                  details_data.region_data.total_predictions_percentage.choice2.male) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.region_data.total_predictions.choice1.male +
-              details_data.region_data.total_predictions.choice2.male
-            }}
-            votes)</span
-          >
-          <span class="opacity-30">Prediction</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md rounded-tr-md text-white flex items-center justify-between gap-1 relative"
-          :style="{
-            width:
-              (details_data.region_data.total_predictions_percentage.choice1.female +
-                details_data.region_data.total_predictions_percentage.choice2.female) /
-                2 +
-              '%'
-          }"
-        >
-          <span></span>
-          <span class="opacity-60"
-            >{{
-              (
-                (details_data.region_data.total_predictions_percentage.choice1.female +
-                  details_data.region_data.total_predictions_percentage.choice2.female) /
-                2
-              ).toFixed(2) + '%'
-            }}
-            ({{
-              details_data.region_data.total_predictions.choice1.female +
-              details_data.region_data.total_predictions.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-
-      <div class="w-full mt-12 flex flex-row items-center gap-1 mb-3">
-        <p class="text-white"><i class="fa-solid fa-person-dress"></i> Female statistics</p>
-        <hr class="flex-grow border-t-2 border-pink-500 opacity-100" />
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - region_female_vote_percentage + '%' }"
-        >
-          <span class="opacity-60"
-            >{{ (100 - region_female_vote_percentage).toFixed(2) + '%' }} ({{
-              details_data.region_data.total_votes.choice1.female
-            }}
-            votes)</span
-          >
-          <span>{{ poll_data.choice1 }}</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: region_female_vote_percentage + '%' }"
-        >
-          <span>{{ poll_data.choice2 }}</span>
-          <span class="opacity-60 text-left"
-            >{{ region_female_vote_percentage.toFixed(2) + '%' }} ({{
-              details_data.region_data.total_votes.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - region_female_predictions_percentage + '%' }"
-        >
-          <span class="opacity-60 text-left"
-            >{{ (100 - region_female_predictions_percentage).toFixed(2) + '%' }} ({{
-              details_data.region_data.total_predictions.choice1.female
-            }}
-            votes)</span
-          >
-          <span class="opacity-30">Prediction</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: region_female_predictions_percentage + '%' }"
-        >
-          <span></span>
-          <span class="opacity-60"
-            >{{ region_female_predictions_percentage.toFixed(2) + '%' }} ({{
-              details_data.region_data.total_predictions.choice2.female
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-
-      <div class="w-full flex flex-row items-center gap-1 mt-3 mb-3">
-        <p class="text-white"><i class="fa-solid fa-person"></i> Male statistics</p>
-        <hr class="flex-grow border-t-2 border-blue-500 opacity-100" />
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - region_male_vote_percentage + '%' }"
-        >
-          <span class="opacity-60 text-left"
-            >{{ (100 - region_male_vote_percentage).toFixed(2) + '%' }} ({{
-              details_data.region_data.total_votes.choice1.male
-            }}
-            votes)</span
-          >
-          <span>{{ poll_data.choice1 }}</span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: region_male_vote_percentage + '%' }"
-        >
-          <span>{{ poll_data.choice2 }}</span>
-          <span class="opacity-60"
-            >{{ region_male_vote_percentage.toFixed(2) + '%' }} ({{
-              details_data.region_data.total_votes.choice2.male
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-      <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: 100 - region_male_predictions_percentage + '%' }"
-        >
-          <span class="text-left opacity-60"
-            >{{ (100 - region_male_predictions_percentage).toFixed(2) + '%' }} ({{
-              details_data.region_data.total_predictions.choice1.male
-            }}
-            votes)</span
-          >
-          <span> <span class="opacity-30">Prediction</span></span>
-        </span>
-        <span
-          class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-          :style="{ width: region_male_predictions_percentage + '%' }"
-        >
-          <span></span>
-          <span class="opacity-60"
-            >{{ region_male_predictions_percentage.toFixed(2) + '%' }} ({{
-              details_data.region_data.total_predictions.choice2.male
-            }}
-            votes)</span
-          >
-        </span>
-      </div>
-    </div>
-
-    <hr class="w-full mt-10 mb-10 border-t-2 border-white" />
-    <div class="flex flex-row items-center justify-between gap-1">
-      <p>Voter turnout</p>
-      <p class="opacity-30">Number of votes received, regardless of choice</p>
-    </div>
-    <div class="h-10 mt-3 w-full flex flex-row items-center gap-1">
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md rounded-bl-md text-right text-white flex items-center justify-between gap-1 relative"
-        :style="{
-          width:
-            (votes_data.total_votes_percentage.choice1.male +
-              votes_data.total_votes_percentage.choice2.male) /
-              2 +
-            '%'
-        }"
-      >
-        <span class="opacity-60"
-          >{{
-            (
-              (votes_data.total_votes_percentage.choice1.male +
-                votes_data.total_votes_percentage.choice2.male) /
-              2
-            ).toFixed(2) + '%'
-          }}
-          ({{
-            votes_data.total_votes.choice1.male + votes_data.total_votes.choice2.male
-          }}
-          votes)</span
-        >
-        <span><i class="fa-solid fa-person"></i> Male</span>
-      </span>
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-l-md rounded-br-md text-white flex items-center justify-between gap-1 relative"
-        :style="{
-          width:
-            (votes_data.total_votes_percentage.choice1.female +
-              votes_data.total_votes_percentage.choice2.female) /
-              2 +
-            '%'
-        }"
-      >
-        <span><i class="fa-solid fa-person-dress"></i> Female</span>
-        <span class="opacity-60"
-          >{{
-            (
-              (votes_data.total_votes_percentage.choice1.female +
-                votes_data.total_votes_percentage.choice2.female) /
-              2
-            ).toFixed(2) + '%'
-          }}
-          ({{
-            votes_data.total_votes.choice1.female + votes_data.total_votes.choice2.female
-          }}
-          votes)</span
-        >
-      </span>
-    </div>
-    <div class="h-10 mt-1 w-full flex flex-row items-center gap-1">
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md rounded-tl-md text-right text-white flex items-center justify-between gap-1 relative"
-        :style="{
-          width:
-            (votes_data.total_predictions_percentage.choice1.male +
-              votes_data.total_predictions_percentage.choice2.male) /
-              2 +
-            '%'
-        }"
-      >
-        <span class="opacity-60"
-          >{{
-            (
-              (votes_data.total_predictions_percentage.choice1.male +
-                votes_data.total_predictions_percentage.choice2.male) /
-              2
-            ).toFixed(2) + '%'
-          }}
-          ({{
-            votes_data.total_predictions.choice1.male + votes_data.total_predictions.choice2.male
-          }}
-          votes)</span
-        >
-        <span class="opacity-30">Prediction</span>
-      </span>
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md rounded-tr-md text-white flex items-center justify-between gap-1 relative"
-        :style="{
-          width:
-            (votes_data.total_predictions_percentage.choice1.female +
-              votes_data.total_predictions_percentage.choice2.female) /
-              2 +
-            '%'
-        }"
-      >
-        <span></span>
-        <span class="opacity-60"
-          >{{
-            (
-              (votes_data.total_predictions_percentage.choice1.female +
-                votes_data.total_predictions_percentage.choice2.female) /
-              2
-            ).toFixed(2) + '%'
-          }}
-          ({{
-            votes_data.total_predictions.choice1.female +
-            votes_data.total_predictions.choice2.female
-          }}
-          votes)</span
-        >
-      </span>
-    </div>
-
-    <div class="w-full mt-12 flex flex-row items-center gap-1 mb-3">
-      <p class="text-white"><i class="fa-solid fa-person-dress"></i> Female statistics</p>
-      <hr class="flex-grow border-t-2 border-pink-500 opacity-100" />
-    </div>
-    <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: 100 - female_vote_percentage + '%' }"
-      >
-        <span class="opacity-60"
-          >{{ (100 - female_vote_percentage).toFixed(2) + '%' }} ({{
-            votes_data.total_votes.choice1.female
-          }}
-          votes)</span
-        >
-        <span>{{ poll_data.choice1 }}</span>
-      </span>
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-pink-500 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: female_vote_percentage + '%' }"
-      >
-        <span>{{ poll_data.choice2 }}</span>
-        <span class="opacity-60 text-left"
-          >{{ female_vote_percentage.toFixed(2) + '%' }} ({{
-            votes_data.total_votes.choice2.female
-          }}
-          votes)</span
-        >
-      </span>
-    </div>
-    <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: 100 - female_predictions_percentage + '%' }"
-      >
-        <span class="opacity-60 text-left"
-          >{{ (100 - female_predictions_percentage).toFixed(2) + '%' }} ({{
-            votes_data.total_predictions.choice1.female
-          }}
-          votes)</span
-        >
-        <span class="opacity-30">Prediction</span>
-      </span>
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: female_predictions_percentage + '%' }"
-      >
-        <span></span>
-        <span class="opacity-60"
-          >{{ female_predictions_percentage.toFixed(2) + '%' }} ({{
-            votes_data.total_predictions.choice2.female
-          }}
-          votes)</span
-        >
-      </span>
-    </div>
-
-    <div class="w-full flex flex-row items-center gap-1 mt-3 mb-3">
-      <p class="text-white"><i class="fa-solid fa-person"></i> Male statistics</p>
-      <hr class="flex-grow border-t-2 border-blue-500 opacity-100" />
-    </div>
-    <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: 100 - male_vote_percentage + '%' }"
-      >
-        <span class="opacity-60 text-left"
-          >{{ (100 - male_vote_percentage).toFixed(2) + '%' }} ({{
-            votes_data.total_votes.choice1.male
-          }}
-          votes)</span
-        >
-        <span>{{ poll_data.choice1 }}</span>
-      </span>
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: male_vote_percentage + '%' }"
-      >
-        <span>{{ poll_data.choice2 }}</span>
-        <span class="opacity-60"
-          >{{ male_vote_percentage.toFixed(2) + '%' }} ({{
-            votes_data.total_votes.choice2.male
-          }}
-          votes)</span
-        >
-      </span>
-    </div>
-    <div class="h-10 mt-2 w-full flex flex-row items-center gap-1">
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: 100 - male_predictions_percentage + '%' }"
-      >
-        <span class="text-left opacity-60"
-          >{{ (100 - male_predictions_percentage).toFixed(2) + '%' }} ({{
-            votes_data.total_predictions.choice1.male
-          }}
-          votes)</span
-        >
-        <span> <span class="opacity-30">Prediction</span></span>
-      </span>
-      <span
-        class="h-full p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-l-md text-white flex items-center justify-between gap-1 relative"
-        :style="{ width: male_predictions_percentage + '%' }"
-      >
-        <span></span>
-        <span class="opacity-60"
-          >{{ male_predictions_percentage.toFixed(2) + '%' }} ({{
-            votes_data.total_predictions.choice2.male
-          }}
-          votes)</span
-        >
-      </span>
-    </div>
-    <!-- use votes_data to fetch results-->
-    <!-- <span>{{ votes_data.total_votes }}</span> -->
+    <h2><i class="fa-solid fa-globe-americas"></i> Worldwide Poll statistics</h2>
+    <DetailedChart v-bind="votes_data" />
   </div>
   <div
     v-else
