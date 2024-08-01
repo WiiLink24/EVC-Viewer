@@ -63,7 +63,7 @@ let randomPercentage2 = ref(`${100 - randomPercentage}%`)
     </div>
     <div class="pt-2 pb-2 p-[6px] rounded-2xl bg-gradient-to-b from-gray-900 to-gray-700">
       <h3
-        class="p-3 bg-black rounded-t-xl rounded-b-md text-center text-xl text-white sm:line-clamp-1"
+        class="border-black border-[0.75em] bg-black rounded-t-xl rounded-b-md text-center text-xl text-white sm:line-clamp-1"
         :title="content"
       >
         {{ content }}
