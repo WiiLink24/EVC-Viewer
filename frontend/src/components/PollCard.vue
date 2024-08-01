@@ -74,15 +74,15 @@ let randomPercentage2 = ref(`${100 - randomPercentage}%`)
       >
         {{ content }}
       </h3>
-      <div class="poll-hover-responses mt-2 w-full flex flex-row items-center gap-1">
+      <div class="poll-hover-responses mt-2 w-full flex flex-row items-stretch gap-1">
         <span
-          class="poll-response p-1 pl-5 pr-5 bg-pink-700 rounded-xl text-right block relative"
+          class="flex-grow flex items-center justify-end poll-response poll-response p-1 pl-5 pr-5 bg-pink-700 rounded-xl text-right relative dark:text-white"
           :style="{ width: randomPercentage1 }"
         >
           {{ choice1 }}
         </span>
         <span
-          class="poll-response p-1 pl-5 pr-5 bg-green-700 rounded-xl block relative"
+          class="flex-grow flex items-center poll-response p-1 pl-5 pr-5 bg-green-700 rounded-xl relative dark:text-white"
           :style="{ width: randomPercentage2 }"
         >
           {{ choice2 }}
