@@ -3,13 +3,6 @@ import { defineProps, ref } from 'vue'
 import { type Poll } from '@/types'
 
 let props = defineProps<Poll>()
-let formattedType = props.type
-
-if (props.type === 'n') {
-  formattedType = '<i class="fa-solid fa-flag"></i> National'
-} else if (props.type === 'w') {
-  formattedType = '<i class="fa-solid fa-globe-americas"></i> Worldwide'
-}
 
 function dateDifference(date: string) {
   let currentDate = new Date()
@@ -56,7 +49,8 @@ let randomPercentage2 = ref(`${100 - randomPercentage}%`)
     <div
       class="poll-hover-metadata pt-1 pl-2 pr-2 flex flex-row items-center justify-between text-black"
     >
-      <span v-html="formattedType" class="font-bold translate-y-[2px]"></span>
+      <span v-if="props.type === 'n'" class="font-bold translate-y-[2px]"><i class="fa-solid fa-flag"></i> National</span>
+      <span v-else-if="props.type === 'w'" class="font-bold translate-y-[2px]"><i class="fa-solid fa-globe-americas"></i> Worldwide</span>
       <span class="opacity-60 translate-y-[2px] text-right"
         >{{ category }} | {{ formattedDate }}
         <i

@@ -120,14 +120,8 @@ router.get("/api/polls/poll/:id", async (req: any, res: any) => {
 
     //process the votes data
     let votes_query = `SELECT ans_cnt, type_cd FROM votes WHERE question_id = $1`;
-    let params = [id];
 
-    if (isNational) {
-      votes_query += ` AND country_cd = $2`;
-      params.push(country);
-    }
-
-    const data = await db.many(votes_query, params);
+    const data = await db.many(votes_query, id);
 
     const votes_data = data.filter((votes: any) => votes.type_cd === 0);
     const predictions_data = data.filter((votes: any) => votes.type_cd === 1);
