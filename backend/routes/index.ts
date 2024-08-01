@@ -30,7 +30,7 @@ const languageColumns: { [key: string]: string[] } = {
 };
 
 const getItemsNumber = {
-  polls: "SELECT COUNT(*) FROM questions",
+  polls: "SELECT COUNT(*) FROM questions WHERE date <= NOW()",
   votes: "SELECT COUNT(*) FROM votes WHERE type_cd = 0 AND question_id = $1",
 };
 
