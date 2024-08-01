@@ -113,7 +113,6 @@ onMounted(async () => {
       }
     })
 
-    // Copy the div
   } catch (error) {
     console.error(error)
   } finally {

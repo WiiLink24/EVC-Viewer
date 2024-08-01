@@ -32,7 +32,7 @@ onMounted(() => {
 <template>
   <h1
     id="title"
-    class="text-9xl outline-text uppercase whitespace-nowrap text-ellipsisopacity-50 z-5 relative flex items-center justify-between overflow-hidden invert dark:invert-0"
+    class="text-9xl outline-text uppercase whitespace-nowrap text-ellipsis opacity-50 z-5 relative flex items-center justify-between overflow-hidden invert dark:invert-0"
   >
     {{ title }} <i v-if="icon" :class="icon" class="mobile-hide"></i>
   </h1>
