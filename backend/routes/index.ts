@@ -74,7 +74,18 @@ router.get("/api/polls", async (req: any, res: any) => {
       delete poll[choice2Column];
     });
 
-    let total_items = await db.one(getItemsNumber.polls);
+    let total_items;
+    let total_items_query = getItemsNumber.polls;
+    if (type === "all") {
+      total_items = await db.one(getItemsNumber.polls);
+    } else if (type === "n") {
+      total_items_query += " AND type = 'n'";
+      total_items = await db.one(total_items_query);
+    } else if (type === "w") {
+      total_items_query += " AND type = 'w'";
+      total_items = await db.one(total_items_query);
+    }
+    
     total_items = total_items.count;
     const total_pages = Math.ceil(total_items / limit);
 
