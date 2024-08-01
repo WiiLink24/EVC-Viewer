@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ReturnBtn from '@/components/ReturnBtn.vue'
 import Title from '@/components/Title.vue'
 import { useHead } from '@unhead/vue'
 

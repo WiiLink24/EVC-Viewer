@@ -10,7 +10,7 @@ import { useHead } from '@unhead/vue'
 useHead({
   title: 'Poll Details | EVC Viewing Tool',
   meta: [
-    { name: 'description', content: 'The content you were looking for could not be found...' },
+    { name: 'description', content: 'View the details of this Poll!' },
     { property: 'og:image', content: '/img/evcseobg.png' }
   ]
 })

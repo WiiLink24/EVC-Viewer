@@ -5,6 +5,18 @@ import { countries } from '@/countries'
 import Title from '@/components/Title.vue'
 import PollCard from '@/components/PollCard.vue'
 import PageNavigation from '@/components/PageNavigation.vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'EVC Viewing Tool | WiiLink',
+  meta: [
+    {
+      name: 'description',
+      content: 'View and filter past and present Polls from the WiiLink Everybody Votes Channel!'
+    },
+    { property: 'og:image', content: '/img/evcseobg.png' }
+  ]
+})
 
 const polls = ref()
 const filteredPolls = ref()
@@ -253,6 +265,8 @@ watch(view_type, async (newViewType) => {
     isLoading.value = true
     localStorage.setItem('view_type', newViewType)
     const response = await fetchCurrentPolls(1, language.value, limit.value, newViewType)
+    total_pages.value = response.total_pages
+    total_items.value = parseInt(response.total_items)
     polls.value = response.data
     filteredPolls.value = polls.value.filter((poll) => {
       if (

@@ -10,7 +10,7 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'Search all of our Mii database and download them for yourself!'
+      content: 'Search all of our Poll database!'
     },
     { property: 'og:image', content: '/img/cmocseobg.png' }
   ]
