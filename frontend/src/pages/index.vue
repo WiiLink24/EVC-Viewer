@@ -340,13 +340,13 @@ function dateDifference(date: string) {
   <div
     class="left-1/2 -translate-x-1/2 top-24 sm:w-[98%] w-[95%] flex sm:flex-row flex-col items-center sm:items-start justify-center gap-8 relative"
   >
-    <div class="sticky-container sm:w-96 sm:h-screen flex flex-col justify-between">
+    <div class="sticky-container sm:w-96 w-full sm:h-screen flex flex-col justify-between">
       <div>
         <span class="w-full mb-2 flex flex-row items-center justify-between"
           ><p class="opacity-30"><i class="fa-solid fa-flag"></i> Country and Region</p>
-          <label class="container flex items-start"
+          <label class="container flex items-start sm:-translate-y-2 -translate-y-5"
             ><i
-              class="fa-solid fa-triangle-exclamation text-yellow-400 text-sm"
+              class="fa-solid fa-triangle-exclamation text-yellow-400 text-sm sm:block hidden"
               title="If a poll has no submissions for a given region, no data will be shown."
             ></i>
             <input
@@ -441,7 +441,7 @@ function dateDifference(date: string) {
             ><i class="fa-solid fa-globe-americas w-full text-center dark:text-white"></i
           ></label>
         </div>
-        <hr class="w-full mt-8 border-t-2 dark:border-white" />
+        <hr class="w-full mt-8 border-t-2 dark:border-white/30" />
         <a
           class="w-full mt-10 justify-center flex-row gap-1 items-center bg-[#2bca38] hover:bg-green-600 hover:scale-105 hover:shadow-xl hover:shadow-green-400/10 hover:no-underline transition-all px-8 py-3 rounded-xl text-white border-2 border-gray-200/10 sm:inline-flex hidden"
           href="https://www.wiilink24.com/"
@@ -463,7 +463,7 @@ function dateDifference(date: string) {
       />
     </div>
 
-    <ul class="flex flex-col gap-3 items-center sm:items-start">
+    <ul class="w-full sm:w-auto flex flex-col gap-3 items-center sm:items-start">
       <Title v-if="view_type === 'all'" name="Polls" class="w-[95%] max-w-[900px] sm:h-24" />
       <Title v-if="view_type === 'n'" name="National" class="w-[95%] max-w-[900px] sm:h-24" />
       <Title v-if="view_type === 'w'" name="World" class="w-[95%] max-w-[900px] sm:h-24" />
