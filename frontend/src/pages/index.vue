@@ -462,7 +462,7 @@ function dateDifference(date: string) {
       />
     </div>
 
-    <ul class="w-full sm:w-auto flex flex-col gap-3 items-center sm:items-start">
+    <ul class="w-full sm:w-[700px] flex flex-col gap-3 items-center sm:items-start">
       <Title v-if="view_type === 'all'" name="Polls" class="w-[95%] max-w-[900px] sm:h-24" />
       <Title v-if="view_type === 'n'" name="National" class="w-[95%] max-w-[900px] sm:h-24" />
       <Title v-if="view_type === 'w'" name="World" class="w-[95%] max-w-[900px] sm:h-24" />
