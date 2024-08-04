@@ -7,7 +7,7 @@ const fs = require('fs');
 const { rateLimit } = require('express-rate-limit');
 
 
-const indexRouter = require('./routes/index.ts');
+const indexRouter = require('./routes/index');
 const port = process.env.PORT || 3000;
 
 const app = express();
@@ -24,6 +24,13 @@ app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(express.static(path.join(__dirname, "public/dist")));
 app.set("trust proxy", true)
+app.use(function (req:any, res:any, next:any) {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; font-src *; object-src *; media-src *; frame-src *;"
+  );
+  next();
+});
 
 app.use("/", indexRouter);
 
