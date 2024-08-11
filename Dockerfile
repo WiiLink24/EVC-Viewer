@@ -9,7 +9,10 @@ WORKDIR /app
 COPY backend/ .
 COPY --from=build-stage /app/dist /app/public/dist
 RUN npm install
+RUN npx tsc
+RUN find . -name "*.ts" -type f -delete
+RUN cp -r out/* .
 
-EXPOSE 3000
+EXPOSE 4000
 
 CMD ["node", "app.js"]

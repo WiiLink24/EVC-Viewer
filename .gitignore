@@ -2,3 +2,4 @@ node_modules
 backend/access.log
 .env
 backend/public
+backend/out
