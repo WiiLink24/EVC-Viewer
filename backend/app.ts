@@ -1,3 +1,5 @@
+import { contentSecurityPolicy } from "helmet";
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -20,17 +22,21 @@ var accessLogStream = fs.createWriteStream(path.join(__dirname, "access.log"), {
 
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: false,
+    directives: {
+      defaultSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "fonts.googleapis.com", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "fontawesome.com", "kit.fontawesome.com", "'unsafe-inline'"],
+      connectSrc: ["'self'", "ka-f.fontawesome.com", "'unsafe-inline'"],
+      fontSrc: ["'self'", "fonts.gstatic.com"],
+    },
+  },
+}));
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(express.static(path.join(__dirname, "public/dist")));
 app.set("trust proxy", true)
-app.use(function (req:any, res:any, next:any) {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data:; connect-src *; font-src *; object-src *; media-src *; frame-src *;"
-  );
-  next();
-});
 
 app.use("/", indexRouter);
 
