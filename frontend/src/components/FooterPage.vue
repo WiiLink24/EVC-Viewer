@@ -195,6 +195,14 @@
 </template>
 
 <style scoped>
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Rubik';
+  src: url('/fonts/Rubik.ttf') format('truetype');
+}
 h4,
 p,
 a {
