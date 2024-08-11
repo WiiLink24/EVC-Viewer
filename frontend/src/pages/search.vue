@@ -87,7 +87,7 @@ onMounted(() => {
         class="w-full p-3 bg-gray-200/60 dark:bg-slate-500/60 backdrop-blur-sm hover:bg-gray-300 dark:hover:bg-slate-600 focus:bg-gray-300 dark:focus:bg-slate-700 transition-all relative rounded-l-[18px] rounded-r-[4px] dark:text-white"
         v-model="search_field"
         type="text"
-        placeholder="Search for Miis or Artisans by Name, ID or Initials..."
+        placeholder="Search for Polls in the Database..."
         @keyup.enter="searchQuery(), (current_page = 1)"
         :autofocus="true"
       />
