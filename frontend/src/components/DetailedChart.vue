@@ -28,7 +28,7 @@ let male_prediction_vote_intention_percentage =
 <template>
   <div class="h-auto min-h-10 mt-3 w-full flex flex-row items-stretch gap-1">
     <span
-      class="flex-grow p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md rounded-bl-md text-right text-white flex items-center justify-between gap-1 relative"
+      class="p-1 pl-5 pr-5 bg-blue-500 rounded-xl rounded-r-md rounded-bl-md text-right text-white flex items-center justify-between gap-1 relative"
       :style="{
         width: male_vote_intention_percentage + '%'
       }"
@@ -58,7 +58,7 @@ let male_prediction_vote_intention_percentage =
   </div>
   <div class="h-auto min-h-10 mt-1 w-full flex flex-row items-stretch gap-1">
     <span
-      class="flex-grow p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md rounded-tl-md text-right text-white flex items-center justify-between gap-1 relative"
+      class="p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md rounded-tl-md text-right text-white flex items-center justify-between gap-1 relative"
       :style="{
         width: male_prediction_vote_intention_percentage + '%'
       }"
@@ -92,7 +92,7 @@ let male_prediction_vote_intention_percentage =
   </div>
   <div class="h-auto min-h-10 mt-2 w-full flex flex-row items-stretch gap-1">
     <span
-      class="flex-grow p-1 pl-5 pr-5 bg-pink-700/70 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
+      class="p-1 pl-5 pr-5 bg-pink-700/70 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
       :style="{ width: female_vote_percentage + '%' }"
     >
       <span class="opacity-60 text-left"
@@ -117,7 +117,7 @@ let male_prediction_vote_intention_percentage =
   </div>
   <div class="h-auto min-h-10 mt-2 w-full flex flex-row items-stretch gap-1">
     <span
-      class="flex-grow p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
+      class="p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
       :style="{ width: female_predictions_percentage + '%' }"
     >
       <span class="opacity-60 text-left"
@@ -148,7 +148,7 @@ let male_prediction_vote_intention_percentage =
   </div>
   <div class="h-auto min-h-10 mt-2 w-full flex flex-row items-stretch gap-1">
     <span
-      class="flex-grow p-1 pl-5 pr-5 bg-pink-700/70 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
+      class="p-1 pl-5 pr-5 bg-pink-700/70 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
       :style="{ width: male_vote_percentage + '%' }"
     >
       <span class="opacity-60 text-left"
@@ -174,7 +174,7 @@ let male_prediction_vote_intention_percentage =
   </div>
   <div class="h-auto mt-2 w-full flex flex-row items-stretch gap-1">
     <span
-      class="flex-grow p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
+      class="p-1 pl-5 pr-5 bg-slate-600 rounded-xl rounded-r-md text-right text-white flex items-center justify-between gap-1 relative"
       :style="{ width: male_predictions_percentage + '%' }"
     >
       <span class="text-left opacity-60"
