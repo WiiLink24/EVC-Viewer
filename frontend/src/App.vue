@@ -13,3 +13,14 @@ import Footer from '@/components/FooterPage.vue'
     <Footer />
   </main>
 </template>
+
+<style>
+@font-face {
+    font-family: Rubik;
+    src: url(/fonts/Rubik.ttf);
+}
+@font-face {
+    font-family: gilroy;
+    src: url(/fonts/Gilroy.otf);
+}
+</style>
