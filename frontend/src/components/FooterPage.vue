@@ -35,7 +35,7 @@
             "
           >
             <i class="fa-solid fa-envelope-open" style="margin-right: 5px"></i>
-            <a href="mailto:contact@wiilink24.com"><u>contact@wiilink24.com</u></a>
+            <a href="mailto:support@wiilink.ca"><u>support@wiilink.ca</u></a>
           </p>
           <p
             style="
