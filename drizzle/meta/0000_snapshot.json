@@ -1,0 +1,365 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.questions": {
+      "name": "questions",
+      "schema": "",
+      "columns": {
+        "question_id": {
+          "name": "question_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_english": {
+          "name": "content_english",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_german": {
+          "name": "content_german",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_french": {
+          "name": "content_french",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_spanish": {
+          "name": "content_spanish",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_italian": {
+          "name": "content_italian",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_dutch": {
+          "name": "content_dutch",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_portuguese": {
+          "name": "content_portuguese",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_french_canada": {
+          "name": "content_french_canada",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_english": {
+          "name": "choice1_english",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_german": {
+          "name": "choice1_german",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_french": {
+          "name": "choice1_french",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_spanish": {
+          "name": "choice1_spanish",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_italian": {
+          "name": "choice1_italian",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_dutch": {
+          "name": "choice1_dutch",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_portuguese": {
+          "name": "choice1_portuguese",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1_french_canada": {
+          "name": "choice1_french_canada",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_english": {
+          "name": "choice2_english",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_german": {
+          "name": "choice2_german",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_french": {
+          "name": "choice2_french",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_spanish": {
+          "name": "choice2_spanish",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_italian": {
+          "name": "choice2_italian",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_dutch": {
+          "name": "choice2_dutch",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_portuguese": {
+          "name": "choice2_portuguese",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2_french_canada": {
+          "name": "choice2_french_canada",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.suggestions": {
+      "name": "suggestions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country_code": {
+          "name": "country_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "region_code": {
+          "name": "region_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "language_code": {
+          "name": "language_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice1": {
+          "name": "choice1",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "choice2": {
+          "name": "choice2",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wii_no": {
+          "name": "wii_no",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.votes": {
+      "name": "votes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "nextval('votes_new_column_seq'::regclass)"
+        },
+        "type_cd": {
+          "name": "type_cd",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "question_id": {
+          "name": "question_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wii_no": {
+          "name": "wii_no",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_id": {
+          "name": "country_id",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "region_id": {
+          "name": "region_id",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ans_cnt": {
+          "name": "ans_cnt",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "new_column": {
+          "name": "new_column",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {
+      "votes": {
+        "columns": {
+          "id": {
+            "isDefaultAnExpression": true
+          }
+        }
+      }
+    }
+  }
+}
