@@ -30,5 +30,7 @@ export default defineEventHandler(async (event) => {
 
     });
 
-    return { data };
+    removeLanguageCols(data)
+
+    return data;
 });

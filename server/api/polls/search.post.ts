@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
         orderBy: (questions, { desc }) => [desc(questions.date)],
     });
 
-    console.log(removeLanguageCols(data));
+    removeLanguageCols(data);
 
-    return { data };
+    return data;
 });

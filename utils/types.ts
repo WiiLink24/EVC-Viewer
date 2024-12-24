@@ -1,5 +1,5 @@
 export interface Poll {
-    question_id: number,
+    questionId: number,
     category: number,
     content: string,
     choice1: string,

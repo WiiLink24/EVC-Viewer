@@ -39,5 +39,7 @@ export default defineEventHandler(async (event) => {
 
     const total_pages = Math.ceil(total_items / limit);
 
+    removeLanguageCols(data);
+
     return { total_pages, total_items, data};
 });

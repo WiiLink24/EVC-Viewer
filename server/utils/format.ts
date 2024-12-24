@@ -16,18 +16,20 @@ export function useFormatAnsCnt(ansCnt: string): number[] {
   uintArray.splice(4 - ansCnt.length, ansCnt.length, ...temp);
   return uintArray;
 }
+export function removeLanguageCols(data: any[]) {
+  return data.forEach((poll: Poll) => {
+    const keyMap = {
+      content: 'content',
+      choice1: 'choice1',
+      choice2: 'choice2'
+    } as const;
 
-export function removeLanguageCols(data: any): Poll[] {
-  //rename content[lang], choice1[lang], choice2[lang] to content, choice1, choice2
-  //for example, contentEnglish -> content
-  return data.map((d: any) => {
-    let obj = { ...d };
-    Object.keys(language_columns).forEach((lang) => {
-      Object.keys(language_columns[lang]).forEach((field) => {
-        obj[field] = obj[`${field}${lang.charAt(0).toUpperCase()}${lang.slice(1)}`];
-        delete obj[`${field}${lang.charAt(0).toUpperCase()}${lang.slice(1)}`];
-      });
+    Object.keys(poll).forEach((key) => {
+      const prefix = Object.keys(keyMap).find(p => key.startsWith(p));
+      if (prefix) {
+      (poll as any)[keyMap[prefix as keyof typeof keyMap]] = (poll as any)[key];
+      delete (poll as any)[key];
+      }
     });
-    return obj;
-  });
+  })
 }
