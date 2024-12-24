@@ -9,6 +9,11 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-  modules: ["@nuxt/icon", "@vueuse/nuxt", "@nuxtjs/seo"],
+  modules: [
+    "@nuxt/icon",
+    "@vueuse/nuxt",
+    "@nuxtjs/seo",
+    "@nuxt/fonts",
+  ],
   
 });

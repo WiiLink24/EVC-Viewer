@@ -9,7 +9,21 @@ export default {
     "./error.vue",
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        fadeUp: {
+          "0%": { opacity: 0, transform: "translateY(20px)" },
+          "100%": { opacity: 1, transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        fadeUp: "fadeUp 0.3s ease-out forwards",
+      },
+      fontFamily: {
+        "rubik": ["Rubik", "sans-serif"],
+        
+      }
+    },
   },
   plugins: [],
 };
