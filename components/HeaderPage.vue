@@ -61,6 +61,11 @@ const isMenuOpen = ref<boolean>(false)
           @click="isMenuOpen = false"
           ><Icon name="fa6-solid:magnifying-glass" class="mr-2" />Search...</NuxtLink
         >
+        <li class="opacity-30 ml-3">
+          <button class="flex items-center transition-all hover:bg-white/10 p-2 rounded-lg" aria-label="Login to WiiLink Accounts">
+            <Icon name="fa6-solid:arrow-right-to-bracket" size="24" />
+          </button>
+        </li>
       </ul>
     </nav>
   </header>
