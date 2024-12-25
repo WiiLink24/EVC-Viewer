@@ -49,24 +49,24 @@ export function usePercentage(votes: number[][]): results {
         choice1: {
           m: (votes[0][0] / total.votes.choice1) * 100,
           f: (votes[0][1] / total.votes.choice1) * 100,
-          all: (votes[0][0] + votes[0][1] / total.votes.all) * 100,
+          all: ((votes[0][0] + votes[0][1]) / total.votes.all) * 100,
         },
         choice2: {
           m: (votes[0][2] / total.votes.choice2) * 100,
           f: (votes[0][3] / total.votes.choice2) * 100,
-          all: (votes[0][2] + votes[0][3] / total.votes.all) * 100,
+          all: ((votes[0][2] + votes[0][3]) / total.votes.all) * 100,
         },
       },
       predictions: {
         choice1: {
-          m: (votes[1][0] / total.votes.choice1) * 100,
-          f: (votes[1][1] / total.votes.choice1) * 100,
-          all: (votes[1][0] + votes[1][1] / total.votes.all) * 100,
+          m: (votes[1][0] / total.predictions.choice1) * 100,
+          f: (votes[1][1] / total.predictions.choice1) * 100,
+          all: ((votes[1][0] + votes[1][1]) / total.predictions.all) * 100,
         },
         choice2: {
           m: (votes[1][2] / total.votes.choice2) * 100,
           f: (votes[1][3] / total.votes.choice2) * 100,
-          all: (votes[1][2] + votes[1][3] / total.votes.all) * 100,
+          all: ((votes[1][2] + votes[1][3]) / total.predictions.all) * 100,
         },
       },
       total: {
