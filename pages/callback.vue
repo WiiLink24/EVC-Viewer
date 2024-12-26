@@ -15,7 +15,7 @@ const state = route.query.state;
 onMounted(async () => {
     const callbackUrl = window.location.href
     await handleOAuthCallback(callbackUrl)
-    router.push('/')
+    router.push('/login')
 })
 
 

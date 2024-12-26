@@ -9,6 +9,16 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
+  runtimeConfig: {
+    public: {
+      OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID,
+      OIDC_CLIENT_SECRET: process.env.OIDC_CLIENT_SECRET,
+      OIDC_ISSUER: process.env.OIDC_ISSUER,
+      OIDC_REDIRECT_URI: process.env.OIDC_REDIRECT_URI,
+    }
+  },
+
   modules: [
     "@nuxt/icon",
     "@vueuse/nuxt",

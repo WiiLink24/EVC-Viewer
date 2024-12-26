@@ -1,29 +1,44 @@
-import { oidc_clientId, oidc_clientSecret, oidc_issuer, oidc_redirect_uri } from "~/server/const";
-import * as client from 'openid-client'
+import { eq } from "drizzle-orm";
+import { acc_db } from "~/drizzle";
+import { users } from "~/drizzle/acc_schema";
+import { fetchUserInfo, initOAuthConfig } from "~/utils/auth";
 
 export default defineEventHandler(async (event) => {
-    let config = await client.discovery(oidc_issuer, oidc_clientId, oidc_clientSecret)
-    let code_challenge_method = "S256";
+    //parse the Authorization header
 
-    let code_verifier = client.randomPKCECodeVerifier();
-    let code_challenge = await client.calculatePKCECodeChallenge(code_verifier);
-    let state!: string;
+    const auth_header = event.headers.get('Authorization')
 
-    let parameters: Record<string, string> = {
-      redirect_uri: oidc_redirect_uri,
-      scope: "api:read",
-      code_challenge,
-      code_challenge_method,
-    };
-
-    if (!config.serverMetadata().supportsPKCE()) {
-      state = client.randomState();
-      parameters.state = state;
+    if (!auth_header) {
+        throw createError({
+            statusCode: 401,
+            message: 'Authorization header not found'
+        })
     }
 
-    let redirectTo = client.buildAuthorizationUrl(config, parameters);
+    //remove the Bearer prefix
+    const token = auth_header.split(' ')[1];
 
-    console.log(redirectTo.href)
+    await initOAuthConfig();
+    const userInfo = await fetchUserInfo(token);
 
-    return redirectTo.href
+    if (!userInfo) {
+        throw createError({
+            statusCode: 401,
+            message: 'Invalid token'
+        })
+    }
+
+    const record = await acc_db.query.users.findFirst({
+        where: eq(users.email, userInfo.email)
+    })
+
+    if (!record) {
+        throw createError({
+            statusCode: 401,
+            message: 'User not found'
+        })
+    }
+    
+    return setCookie(event, "user_info", JSON.stringify(record));
+    
 });
